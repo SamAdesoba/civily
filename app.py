@@ -14,7 +14,7 @@ model = pickle.load(open('model/model_pickle.pkl', 'rb'))
 vectorizer = CountVectorizer(max_features=1000, ngram_range=(1, 2), max_df=500)
 
 # df = pd.read_csv('util/atiku.csv')
-df_tweet = ['tweet']
+# df_tweet = ['tweet']
 
 last_date = datetime.date.today()
 new_date = datetime.timedelta(hours=24)
@@ -43,26 +43,25 @@ def reformat_json(text):
 
 app = flask.Flask(__name__)
 
-@app.route('/home')
+# @app.route('/home')
 def sensor():
-    print("I love my facilitator")
-    num = random.randint(0,10)
-    # result_1 = []
-    # search_1 = f'(peterobi OR #peterobi OR #obidatti2023) until:{last_date} since:{last_date - new_date}'
-    # for i, tweet in enumerate(sntwitter.TwitterSearchScraper(search_1).get_items()):
-    #     if i > 10:
-    #         break
-    #     else:
-    #         result_1.append([tweet.date, tweet.user.username, tweet.sourceLabel, tweet.content, tweet.user.location, tweet.likeCount, tweet.retweetCount])
-
-    # return pd.DataFrame(result_1, columns=['date', 'username', 'sourceLabel', 'content', 'location', 'likeCount', 'retweetCount'])
-    return num
+    result_1 = []
+    search_1 = f'(peterobi OR #peterobi OR #obidatti2023) until:{last_date} since:{last_date - new_date}'
+    for i, tweet in enumerate(sntwitter.TwitterSearchScraper(search_1).get_items()):
+        if i > 10:
+            break
+        else:
+            result_1.append([tweet.date, tweet.user.username, tweet.sourceLabel, tweet.content, tweet.user.location, tweet.likeCount, tweet.retweetCount])
+    df = pd.DataFrame(result_1, columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
+    return df.to_dict()
 
 
 
-sched = BackgroundScheduler(daemon=True)
-# sched.add_job(sensor,'interval',seconds=5)
-sched.start()
+df_extracted_tweet = sensor().copy()
+
+df = pd.DataFrame(df_extracted_tweet)
+
+df_tweet = df['tweet']
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -88,7 +87,7 @@ def sentiment():
 
 
 
-atexit.register(lambda: sched.shutdown())
+
 
 if __name__ == "__main__":
     app.run()
