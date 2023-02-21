@@ -2,12 +2,17 @@ import flask
 import pickle
 import re
 import pandas as pd
+from sklearn import *
 from sklearn.feature_extraction.text import CountVectorizer
 from apscheduler.schedulers.background import BackgroundScheduler
 import datetime
 import snscrape.modules.twitter as sntwitter
 import atexit
 import random
+
+
+
+
 
 atiku_model = pickle.load(open('model_training/atiku/atiku_model_pickle.pkl', 'rb'))
 
@@ -17,17 +22,19 @@ tinubu_model = pickle.load(open('model_training/tinubu/log_reg_tinubu.pkl', 'rb'
 
 vectorizer = CountVectorizer(max_features=1000, ngram_range=(1, 2), max_df=500)
 
-atiku_df = pd.read_csv('util/atiku.csv')
-atiku_tweet_df = atiku_df['tweet']
+# atiku_df = pd.read_csv('util/atiku.csv')
+# atiku_tweet_df = atiku_df['tweet']
 
-obi_df = pd.read_csv('util/peterobi.csv')
-obi_tweet_df = obi_df['tweet']
+# obi_df = pd.read_csv('util/peterobi.csv')
+# obi_tweet_df = obi_df['tweet']
 
-tinubu_df = pd.read_csv('util/tinubu.csv')
-tinubu_tweet_df = tinubu_df['tweet']
+# tinubu_df = pd.read_csv('util/tinubu.csv')
+# tinubu_tweet_df = tinubu_df['tweet']
 
-# last_date = datetime.date.today()
-# new_date = datetime.timedelta(hours=24)
+current_date = datetime.date.today()
+last_date = datetime.timedelta(hours=72)
+    
+
 
 
 
@@ -53,25 +60,56 @@ def reformat_json(text):
 
 app = flask.Flask(__name__)
 
-# @app.route('/home')
-# def sensor():
-#     result_1 = []
-#     search_1 = f'(peterobi OR #peterobi OR #obidatti2023) until:{last_date} since:{last_date - new_date}'
-#     for i, tweet in enumerate(sntwitter.TwitterSearchScraper(search_1).get_items()):
-#         if i > 10:
-#             break
-#         else:
-#             result_1.append([tweet.date, tweet.user.username, tweet.sourceLabel, tweet.content, tweet.user.location, tweet.likeCount, tweet.retweetCount])
-#     df = pd.DataFrame(result_1, columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
-#     return df.to_dict()
+
+result_atiku = []
+result_obi = []
+result_tinubu = []
+# @app.route('/api/v1/scrape')
+def sensor():
+    for candidates in ['atiku', 'obi', 'tinubu']:
+        if (candidates == 'atiku'):
+            result_atiku.clear()
+            search_atiku = f'(atikuabubakar OR atikuokowa OR #atikuokowa2023 OR #atikuabubakar OR #atikulated2023) until:{current_date} since:{current_date - last_date}'     
+            for i, tweet in enumerate(sntwitter.TwitterSearchScraper(search_atiku).get_items()):
+                if i > 1000:
+                    break
+                else:
+                    result_atiku.append([tweet.date, tweet.user.username, tweet.sourceLabel, tweet.content, tweet.user.location, tweet.likeCount, tweet.retweetCount])
+         
+
+        if (candidates == 'obi'):
+            result_obi.clear()
+            search_obi = f'(peterobi OR #peterobi OR #obidatti2023) until:{current_date} since:{current_date - last_date}'
+            for i, tweet in enumerate(sntwitter.TwitterSearchScraper(search_obi).get_items()):
+                if i > 1000:
+                    break
+                else:
+                    result_obi.append([tweet.date, tweet.user.username, tweet.sourceLabel, tweet.content, tweet.user.location, tweet.likeCount, tweet.retweetCount])
 
 
+        if (candidates == 'tinubu'):
+            result_tinubu.clear()
+            search_tinubu = f'(bolatinubu OR #bolatinubu OR #bat2023) until:{current_date} since:{current_date - last_date}'
+            for i, tweet in enumerate(sntwitter.TwitterSearchScraper(search_tinubu).get_items()):
+                if i > 1000:
+                    break
+                else:
+                    result_tinubu.append([tweet.date, tweet.user.username, tweet.sourceLabel, tweet.content, tweet.user.location, tweet.likeCount, tweet.retweetCount])
+    
+    combined = [result_atiku, result_obi, result_tinubu]
+    return combined
 
-# df_extracted_tweet = sensor().copy()
+combined_list = sensor().copy()
 
-# df = pd.DataFrame(df_extracted_tweet)
+atiku_df = pd.DataFrame(combined_list[0].copy(), columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
+atiku_tweet_df = atiku_df['tweet']
 
-# df_tweet = df['tweet']
+
+obi_df = pd.DataFrame(combined_list[1].copy(), columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
+obi_tweet_df = obi_df['tweet']
+
+tinubu_df = pd.DataFrame(combined_list[2].copy(), columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
+tinubu_tweet_df = tinubu_df['tweet']
 
 
 @app.route('/api/v1/atiku', methods=['GET', 'POST'])
@@ -98,6 +136,7 @@ def atiku_sentiment():
 
 @app.route('/api/v1/obi', methods=['GET', 'POST'])
 def obi_sentiment():
+    # obi_tweet_df = pd.DataFrame(sensor().copy())['tweet']
     cleaned_data = obi_tweet_df.apply(cleanText)
 
     clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
