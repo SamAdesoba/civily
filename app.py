@@ -9,12 +9,22 @@ import snscrape.modules.twitter as sntwitter
 import atexit
 import random
 
-model = pickle.load(open('model_training/atiku/atiku_model_pickle.pkl', 'rb'))
+atiku_model = pickle.load(open('model_training/atiku/atiku_model_pickle.pkl', 'rb'))
+
+obi_model = pickle.load(open('model_training/obi/obi_model_pickle.pkl', 'rb'))
+
+tinubu_model = pickle.load(open('model_training/tinubu/log_reg_tinubu.pkl', 'rb'))
 
 vectorizer = CountVectorizer(max_features=1000, ngram_range=(1, 2), max_df=500)
 
-df = pd.read_csv('util/atiku.csv')
-df_tweet = df['tweet']
+atiku_df = pd.read_csv('util/atiku.csv')
+atiku_tweet_df = atiku_df['tweet']
+
+obi_df = pd.read_csv('util/peterobi.csv')
+obi_tweet_df = obi_df['tweet']
+
+tinubu_df = pd.read_csv('util/tinubu.csv')
+tinubu_tweet_df = tinubu_df['tweet']
 
 # last_date = datetime.date.today()
 # new_date = datetime.timedelta(hours=24)
@@ -64,9 +74,9 @@ app = flask.Flask(__name__)
 # df_tweet = df['tweet']
 
 
-@app.route('/atiku', methods=['GET', 'POST'])
-def sentiment():
-    cleaned_data = df_tweet.apply(cleanText)
+@app.route('/api/v1/atiku', methods=['GET', 'POST'])
+def atiku_sentiment():
+    cleaned_data = atiku_tweet_df.apply(cleanText)
 
     clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
 
@@ -76,7 +86,51 @@ def sentiment():
 
     vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
 
-    result = model.predict(vectorized_df.values)
+    result = atiku_model.predict(vectorized_df.values)
+
+    result_df = pd.DataFrame(result)
+
+    # format_result = result_df.value_counts().to_json(orient='index')
+
+    # return reformat_json(format_result)
+    return result_df.value_counts().to_json(orient='index')
+
+
+@app.route('/api/v1/obi', methods=['GET', 'POST'])
+def obi_sentiment():
+    cleaned_data = obi_tweet_df.apply(cleanText)
+
+    clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
+
+    vectorizer.fit(clean_df['tweet'].values)
+
+    vectorized = vectorizer.transform(clean_df['tweet'])
+
+    vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
+
+    result = obi_model.predict(vectorized_df.values)
+
+    result_df = pd.DataFrame(result)
+
+    # format_result = result_df.value_counts().to_json(orient='index')
+
+    # return reformat_json(format_result)
+    return result_df.value_counts().to_json(orient='index')
+
+
+@app.route('/api/v1/tinubu', methods=['GET', 'POST'])
+def tinubu_sentiment():
+    cleaned_data = tinubu_tweet_df.apply(cleanText)
+
+    clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
+
+    vectorizer.fit(clean_df['tweet'].values)
+
+    vectorized = vectorizer.transform(clean_df['tweet'])
+
+    vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
+
+    result = obi_model.predict(vectorized_df.values)
 
     result_df = pd.DataFrame(result)
 
