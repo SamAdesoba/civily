@@ -22,15 +22,6 @@ tinubu_model = pickle.load(open('model_training/tinubu/log_reg_tinubu.pkl', 'rb'
 
 vectorizer = CountVectorizer(max_features=1000, ngram_range=(1, 2), max_df=500)
 
-# atiku_df = pd.read_csv('util/atiku.csv')
-# atiku_tweet_df = atiku_df['tweet']
-
-# obi_df = pd.read_csv('util/peterobi.csv')
-# obi_tweet_df = obi_df['tweet']
-
-# tinubu_df = pd.read_csv('util/tinubu.csv')
-# tinubu_tweet_df = tinubu_df['tweet']
-
 current_date = datetime.date.today()
 last_date = datetime.timedelta(hours=72)
     
@@ -64,7 +55,7 @@ app = flask.Flask(__name__)
 result_atiku = []
 result_obi = []
 result_tinubu = []
-# @app.route('/api/v1/scrape')
+
 def sensor():
     for candidates in ['atiku', 'obi', 'tinubu']:
         if (candidates == 'atiku'):
@@ -128,14 +119,10 @@ def atiku_sentiment():
 
     result_df = pd.DataFrame(result)
 
-    # format_result = result_df.value_counts().to_json(orient='index')
-
-    # return reformat_json(format_result)
     return result_df.value_counts().to_json(orient='index')
 
 
 def obi_sentiment():
-    # obi_tweet_df = pd.DataFrame(sensor().copy())['tweet']
     cleaned_data = obi_tweet_df.apply(cleanText)
 
     clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
@@ -150,9 +137,6 @@ def obi_sentiment():
 
     result_df = pd.DataFrame(result)
 
-    # format_result = result_df.value_counts().to_json(orient='index')
-
-    # return reformat_json(format_result)
     return result_df.value_counts().to_json(orient='index')
 
 
@@ -171,15 +155,11 @@ def tinubu_sentiment():
 
     result_df = pd.DataFrame(result)
 
-    # format_result = result_df.value_counts().to_json(orient='index')
-
-    # return reformat_json(format_result)
     return result_df.value_counts().to_json(orient='index')
 
 
 @app.route('/api/v1/<candidate>', methods=['GET', 'POST'])
 def sentiments(candidate):
-    # assert candidate == request.args.get('candidate')
     if candidate == 'atiku':
         return atiku_sentiment()
     elif candidate == 'obi':
