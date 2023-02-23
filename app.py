@@ -112,7 +112,7 @@ tinubu_df = pd.DataFrame(combined_list[2].copy(), columns=['date', 'username', '
 tinubu_tweet_df = tinubu_df['tweet']
 
 
-@app.route('/api/v1/atiku', methods=['GET', 'POST'])
+
 def atiku_sentiment():
     cleaned_data = atiku_tweet_df.apply(cleanText)
 
@@ -134,7 +134,6 @@ def atiku_sentiment():
     return result_df.value_counts().to_json(orient='index')
 
 
-@app.route('/api/v1/obi', methods=['GET', 'POST'])
 def obi_sentiment():
     # obi_tweet_df = pd.DataFrame(sensor().copy())['tweet']
     cleaned_data = obi_tweet_df.apply(cleanText)
@@ -157,7 +156,6 @@ def obi_sentiment():
     return result_df.value_counts().to_json(orient='index')
 
 
-@app.route('/api/v1/tinubu', methods=['GET', 'POST'])
 def tinubu_sentiment():
     cleaned_data = tinubu_tweet_df.apply(cleanText)
 
@@ -179,6 +177,15 @@ def tinubu_sentiment():
     return result_df.value_counts().to_json(orient='index')
 
 
+@app.route('/api/v1/<candidate>', methods=['GET', 'POST'])
+def sentiments(candidate):
+    # assert candidate == request.args.get('candidate')
+    if candidate == 'atiku':
+        return atiku_sentiment()
+    elif candidate == 'obi':
+        return obi_sentiment()
+    else:
+        return tinubu_sentiment()
 
 
 
