@@ -1,14 +1,13 @@
 import flask
+from flask import jsonify
 import pickle
 import re
 import pandas as pd
 from sklearn import *
 from sklearn.feature_extraction.text import CountVectorizer
-from apscheduler.schedulers.background import BackgroundScheduler
 import datetime
 import snscrape.modules.twitter as sntwitter
-import atexit
-import random
+from collections import Counter
 
 
 
@@ -47,6 +46,13 @@ def reformat_json(text):
     text = re.sub(r'\(', ' ', text)
     text = re.sub(r'\)..', ' ', text)
     return text
+
+def sentiment_json_fromat(result):
+    counts = Counter(result)
+    value_df = pd.DataFrame.from_dict(counts, orient='index').reset_index()
+    value_df.columns = ['Analysis', 'Sentiment_Count']
+    value_df.sort_values(by='Sentiment_Count', ascending=False, inplace=True)
+    return value_df.set_index(value_df['Analysis']).drop("Analysis", axis=1).to_json(orient='columns')
 
 
 app = flask.Flask(__name__)
@@ -103,6 +109,28 @@ tinubu_df = pd.DataFrame(combined_list[2].copy(), columns=['date', 'username', '
 tinubu_tweet_df = tinubu_df['tweet']
 
 
+def hashtag(tweet):
+    tags = re.findall(r'#(\w+)', tweet)
+    return ' '.join(tags)
+
+atiku_df['hashtags'] = atiku_df['tweet'].apply(hashtag)
+atiku_hashtags_list = atiku_df['hashtags'].tolist()
+atiku_hashtags = []
+
+
+def get_atiku_hash_tag():
+    for item in atiku_hashtags_list:
+        item = item.split()
+        for i in item:
+            atiku_hashtags.append(i)
+
+    counts = Counter(atiku_hashtags)
+    hashtags_df = pd.DataFrame.from_dict(counts, orient='index').reset_index()
+    hashtags_df.columns = ['Hashtags', 'Count']
+    hashtags_df.sort_values(by='Count', ascending=False, inplace=True)
+    sort = hashtags_df.head(10)
+    return sort.set_index(sort['Hashtags']).drop("Hashtags", axis=1).to_json(orient='columns')
+
 
 def atiku_sentiment():
     cleaned_data = atiku_tweet_df.apply(cleanText)
@@ -117,9 +145,26 @@ def atiku_sentiment():
 
     result = atiku_model.predict(vectorized_df.values)
 
-    result_df = pd.DataFrame(result)
+    return sentiment_json_fromat(result)
 
-    return result_df.value_counts().to_json(orient='index')
+
+obi_df['hashtags'] = obi_df['tweet'].apply(hashtag)
+obi_hashtags_list = obi_df['hashtags'].tolist()
+obi_hashtags = []
+
+def get_obi_hash_tag():
+    for item in obi_hashtags_list:
+        item = item.split()
+        for i in item:
+            obi_hashtags.append(i)
+
+    counts = Counter(obi_hashtags)
+    hashtags_df = pd.DataFrame.from_dict(counts, orient='index').reset_index()
+    hashtags_df.columns = ['Hashtags', 'Count']
+    hashtags_df.sort_values(by='Count', ascending=False, inplace=True)
+    sort = hashtags_df.head(10)
+    return sort.set_index(sort['Hashtags']).drop("Hashtags", axis=1).to_json(orient='columns')
+
 
 
 def obi_sentiment():
@@ -135,9 +180,24 @@ def obi_sentiment():
 
     result = obi_model.predict(vectorized_df.values)
 
-    result_df = pd.DataFrame(result)
+    return sentiment_json_fromat(result)
 
-    return result_df.value_counts().to_json(orient='index')
+tinubu_df['hashtags'] = tinubu_df['tweet'].apply(hashtag)
+tinubu_hashtags_list = tinubu_df['hashtags'].tolist()
+tinubu_hashtags = []
+
+def get_tinubu_hash_tag():
+    for item in tinubu_hashtags_list:
+        item = item.split()
+        for i in item:
+            tinubu_hashtags.append(i)
+
+    counts = Counter(tinubu_hashtags)
+    hashtags_df = pd.DataFrame.from_dict(counts, orient='index').reset_index()
+    hashtags_df.columns = ['Hashtags', 'Count']
+    hashtags_df.sort_values(by='Count', ascending=False, inplace=True)
+    sort = hashtags_df.head(10)
+    return sort.set_index(sort['Hashtags']).drop("Hashtags", axis=1).to_json(orient='columns')
 
 
 def tinubu_sentiment():
@@ -153,13 +213,13 @@ def tinubu_sentiment():
 
     result = obi_model.predict(vectorized_df.values)
 
-    result_df = pd.DataFrame(result)
-
-    return result_df.value_counts().to_json(orient='index')
+    return sentiment_json_fromat(result)
 
 
-@app.route('/api/v1/<candidate>', methods=['GET', 'POST'])
-def sentiments(candidate):
+
+
+@app.route('/api/v1/sentiments/<candidate>', methods=['GET', 'POST'])
+def get_sentiments(candidate):
     if candidate == 'atiku':
         return atiku_sentiment()
     elif candidate == 'obi':
@@ -167,7 +227,14 @@ def sentiments(candidate):
     else:
         return tinubu_sentiment()
 
-
+@app.route('/api/v1/hashtags/<candidate>', methods=['GET', 'POST'])
+def get_hashtags(candidate):
+    if candidate == 'atiku':
+        return get_atiku_hash_tag()
+    elif candidate == 'obi':
+        return get_obi_hash_tag()
+    else:
+        return get_tinubu_hash_tag()
 
 
 if __name__ == "__main__":
