@@ -1,4 +1,5 @@
 import flask
+from flask_cors import CORS
 from flask import jsonify
 import pickle
 import re
@@ -56,6 +57,7 @@ def sentiment_json_fromat(result):
 
 
 app = flask.Flask(__name__)
+CORS(app)
 
 
 result_atiku = []
