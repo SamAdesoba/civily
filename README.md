@@ -13,4 +13,4 @@ The Api was deployed on microsoft Azure
 ### Requirements files
 In other to work with this project there is a need to install the requirements file which holds all environment requirement for running of the model.
 
-![prediction image](https://github.com/cisco00/civily/blob/cisco00-path-1/rra.png?raw=true)
+![prediction image](https://github.com/SamAdesoba/civily/blob/cisco00-path-1/rra.png?raw=true)
