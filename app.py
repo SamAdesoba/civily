@@ -9,6 +9,8 @@ from sklearn.feature_extraction.text import CountVectorizer
 import datetime
 import snscrape.modules.twitter as sntwitter
 from collections import Counter
+from itertools import zip_longest
+import json
 
 
 
@@ -52,6 +54,11 @@ def sentiment_json_fromat(result):
     value_df.columns = ['Analysis', 'Sentiment_Count']
     value_df.sort_values(by='Sentiment_Count', ascending=False, inplace=True)
     return value_df.set_index(value_df['Analysis']).drop("Analysis", axis=1).to_json(orient='columns')
+
+
+def UniqueResults(dataframe):
+    tmp = [dataframe[col].unique() for col in dataframe]
+    return pd.DataFrame(zip_longest(*tmp), columns=dataframe.columns)
 
 
 app = flask.Flask(__name__)
@@ -234,8 +241,22 @@ def tinubu_sentiment():
 
 @app.route('/api/v1/sentiment/predict/')
 def get_single_sentiment():
-    atiku_df['Analysis'] = atiku_sentiment_list
-    atiku = atiku_df.set_index(atiku_df['username']).drop(["Unnamed: 0", "username", "date", "sourceLabel", "location", "likeCount", "retweetCount"], axis=1)
+    cleaned_data = atiku_tweet_df.apply(cleanText)
+
+    clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
+
+    vectorizer.fit(clean_df['tweet'].values)
+
+    vectorized = vectorizer.transform(clean_df['tweet'])
+
+    vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
+
+    result = atiku_model.predict(vectorized_df.values)
+
+    atiku_df['Analysis'] = result
+    # atiku_df.apply(lambda col: col.drop_duplicates().reset_index(drop=True))
+    # unique_value = UniqueResults(atiku_df)
+    atiku = atiku_df.set_index(atiku_df['username']).drop(["username", "date", "sourceLabel", "location", "likeCount", "retweetCount"], axis=1)
     positive = atiku[atiku.Analysis == 'Positive'].sample()
     negative = atiku[atiku.Analysis == 'Negative'].sample()
     neutral = atiku[atiku.Analysis == 'Neutral'].sample()
@@ -261,6 +282,41 @@ def get_hashtags(candidate):
         return get_obi_hash_tag()
     else:
         return get_tinubu_hash_tag()
+
+@app.route('/predict')
+# class Predict(Resource):
+def get():
+    # tweet = request.form['tweet']
+    # df = pd.DataFrame([tweet], columns=['tweet'])
+    
+    # df_obi = pd.DataFrame(result_obi, columns=['date', 'user', 'source', 'tweet', 'location', 'like_count', 'retweet_count'])
+    # print(df_obi.head())
+    # print("======================================")
+    
+    
+    obi_df['tweet'] = obi_df['tweet'].apply(cleanText)
+    
+    # final_text = df['tweet']
+    # final_text.iloc[0] = ' '.join(final_text.iloc[0])
+    
+
+    vectorizer.fit(obi_df['tweet'].values)
+    final_text = vectorizer.transform(obi_df['tweet'])
+    prediction = obi_model.predict(final_text)
+    # print(prediction)
+    obi_df['Analysis'] = prediction
+    # atiku_df.apply(lambda col: col.drop_duplicates().reset_index(drop=True))
+    # unique_value = UniqueResults(atiku_df)
+    atiku = obi_df.set_index(obi_df['username']).drop(["username", "date", "sourceLabel", "location", "likeCount", "retweetCount"], axis=1)
+    positive = atiku[atiku.Analysis == 'Positive'].sample()
+    negative = atiku[atiku.Analysis == 'Negative'].sample()
+    neutral = atiku[atiku.Analysis == 'Neutral'].sample()
+    single = pd.concat([positive, negative, neutral])
+    print("======================================")
+    # return prediction
+    # result = json.dumps(prediction)
+    # return json.dumps(str(prediction))
+    return single.to_json(orient='columns')
 
 
 if __name__ == "__main__":

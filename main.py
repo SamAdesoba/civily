@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask
 from flask_restx import Api, Resource
 import snscrape.modules.twitter as sntwitter
 import pandas as pd
