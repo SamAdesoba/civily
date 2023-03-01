@@ -1,5 +1,6 @@
 import flask
-from flask_restx import Api, Resource
+from flask_cors import CORS
+from flask import jsonify
 import pickle
 import re
 import pandas as pd
@@ -54,7 +55,7 @@ def sentiment_json_fromat(result):
 
 
 app = flask.Flask(__name__)
-api = Api(app)
+CORS(app)
 
 
 result_atiku = []
