@@ -12,3 +12,5 @@ The Api was deployed on microsoft Azure
 
 ### Requirements files
 In other to work with this project there is a need to install the requirements file which holds all environment requirement for running of the model.
+
+![prediction in production  ** https://drive.google.com/file/d/1wT2ZIeKzAS2xuOTkgMjJTxE3XThestjL/view?usp=share_link]
