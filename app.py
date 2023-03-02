@@ -1,3 +1,5 @@
+import random
+
 import flask
 from flask_cors import CORS
 from flask import jsonify
@@ -24,7 +26,7 @@ obi_model = pickle.load(open('model_training/obi/obi_model_pickle.pkl', 'rb'))
 tinubu_model = pickle.load(open('model_training/tinubu/log_reg_tinubu.pkl', 'rb'))
 
 vectorizer = CountVectorizer(max_features=1000, ngram_range=(1, 2), max_df=500)
-    
+
 
 # function to clean extracted tweets
 def cleanText(text):
@@ -81,36 +83,36 @@ last_date = datetime.timedelta(hours=72)
 
 # function to extract twitter data
 def sensor():
-    for candidates in ['atiku', 'obi', 'tinubu']:
-        if (candidates == 'atiku'):
+    for candidate in ['atiku', 'obi', 'tinubu']:
+        if (candidate == 'atiku'):
             result_atiku.clear()
-            search_atiku = f'(atikuabubakar OR atikuokowa OR #atikuokowa2023 OR #atikuabubakar OR #atikulated2023) until:{current_date} since:{current_date - last_date}'     
-            for i, tweet in enumerate(sntwitter.TwitterSearchScraper(search_atiku, top=True).get_items()):
+            search_atiku = f'(atikuabubakar OR atikuokowa OR #atikuokowa2023 OR #atikuabubakar OR #atikulated2023) until:{current_date} since:{current_date - last_date}'
+            for i, tweet in enumerate(sntwitter.TwitterSearchScraper(search_atiku).get_items()):
                 if i > 1000:
                     break
                 else:
                     result_atiku.append([tweet.date, tweet.user.username, tweet.sourceLabel, tweet.content, tweet.user.location, tweet.likeCount, tweet.retweetCount])
-         
 
-        if (candidates == 'obi'):
+
+        if (candidate == 'obi'):
             result_obi.clear()
             search_obi = f'(peterobi OR #peterobi OR #obidatti2023) until:{current_date} since:{current_date - last_date}'
-            for i, tweet in enumerate(sntwitter.TwitterSearchScraper(search_obi, top=True).get_items()):
+            for i, tweet in enumerate(sntwitter.TwitterSearchScraper(search_obi).get_items()):
                 if i > 1000:
                     break
                 else:
                     result_obi.append([tweet.date, tweet.user.username, tweet.sourceLabel, tweet.content, tweet.user.location, tweet.likeCount, tweet.retweetCount])
 
 
-        if (candidates == 'tinubu'):
+        if (candidate == 'tinubu'):
             result_tinubu.clear()
             search_tinubu = f'(bolatinubu OR #bolatinubu OR #bat2023) until:{current_date} since:{current_date - last_date}'
-            for i, tweet in enumerate(sntwitter.TwitterSearchScraper(search_tinubu, top=True).get_items()):
+            for i, tweet in enumerate(sntwitter.TwitterSearchScraper(search_tinubu).get_items()):
                 if i > 1000:
                     break
                 else:
                     result_tinubu.append([tweet.date, tweet.user.username, tweet.sourceLabel, tweet.content, tweet.user.location, tweet.likeCount, tweet.retweetCount])
-    
+
     combined = [result_atiku, result_obi, result_tinubu]
     return combined
 
@@ -314,7 +316,7 @@ def tinubu_sentiment():
     return sentiment_json_fromat(result)
 
 
-<<<<<<< HEAD
+
 def tinubu_location():
     cleaned_data = tinubu_tweet_df.apply(cleanText)
     clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
@@ -345,8 +347,7 @@ def tinubu_location():
     
 
 
-@app.route('/api/v1/sentiments/<candidate>', methods=['GET', 'POST'])
-=======
+
 
 @app.route('/api/v1/sentiment/predict/')
 def get_single_sentiment():
@@ -362,19 +363,31 @@ def get_single_sentiment():
 
     result = atiku_model.predict(vectorized_df.values)
 
-    atiku_df['Analysis'] = result
+    result_df = pd.DataFrame(result, columns=['Analysis'], index=None)
+
+
+    atiku_df1 = pd.concat([atiku_df, result_df])
+
+    print('===================================')
+    print(atiku_df.shape)
+    print('===================================')
+    print(result_df.shape)
+
+    print('===================================')
     # atiku_df.apply(lambda col: col.drop_duplicates().reset_index(drop=True))
     # unique_value = UniqueResults(atiku_df)
-    atiku = atiku_df.set_index(atiku_df['username']).drop(["username", "date", "sourceLabel", "location", "likeCount", "retweetCount"], axis=1)
-    positive = atiku[atiku.Analysis == 'Positive'].sample()
-    negative = atiku[atiku.Analysis == 'Negative'].sample()
-    neutral = atiku[atiku.Analysis == 'Neutral'].sample()
+    atiku = atiku_df1.set_index(atiku_df['username']).drop(["username", "date", "sourceLabel", "location", "likeCount", "retweetCount"], axis=1)
+    # positive = atiku[atiku.Analysis == 'Positive'].sample()
+    # negative = atiku[atiku.Analysis == 'Negative'].sample()
+    # neutral = atiku[atiku.Analysis == 'Neutral'].sample()
+    positive = atiku.query("Analysis == Positive")
+    negative = atiku.query("Analysis == Negative")
+    neutral = atiku.query("Analysis == Neutral")
     single = pd.concat([positive, negative, neutral])
     return single.to_json(orient='columns')
 
 @app.route('/api/v1/sentiments/<candidate>')
 # class Sentiment(Resource):
->>>>>>> cda71b8008e31105750db9e91549c694f0627695
 def get_sentiments(candidate):
     sensor()
     if candidate == 'atiku':
@@ -395,8 +408,8 @@ def get_hashtags(candidate):
         return get_obi_hash_tag()
     else:
         return get_tinubu_hash_tag()
-    
-    
+
+
 @app.route('/api/v1/mentions/<candidate>', methods=['GET', 'POST'])
 def get_mentions(candidate):
     if candidate == 'atiku':
@@ -415,31 +428,34 @@ def get_neg_locations(candidate):
 @app.route('/predict')
 # class Predict(Resource):
 def get():
+    prediction = []
     # tweet = request.form['tweet']
     # df = pd.DataFrame([tweet], columns=['tweet'])
-    
+
     # df_obi = pd.DataFrame(result_obi, columns=['date', 'user', 'source', 'tweet', 'location', 'like_count', 'retweet_count'])
     # print(df_obi.head())
     # print("======================================")
-    
-    
+
+
     obi_df['tweet'] = obi_df['tweet'].apply(cleanText)
-    
+
     # final_text = df['tweet']
     # final_text.iloc[0] = ' '.join(final_text.iloc[0])
-    
+
 
     vectorizer.fit(obi_df['tweet'].values)
     final_text = vectorizer.transform(obi_df['tweet'])
-    prediction = obi_model.predict(final_text)
+    prediction.append(obi_model.predict(final_text))
+    print("======================================")
+    print("======================================")
     # print(prediction)
     obi_df['Analysis'] = prediction
-    # atiku_df.apply(lambda col: col.drop_duplicates().reset_index(drop=True))
-    # unique_value = UniqueResults(atiku_df)
-    atiku = obi_df.set_index(obi_df['username']).drop(["username", "date", "sourceLabel", "location", "likeCount", "retweetCount"], axis=1)
-    positive = atiku[atiku.Analysis == 'Positive'].sample()
-    negative = atiku[atiku.Analysis == 'Negative'].sample()
-    neutral = atiku[atiku.Analysis == 'Neutral'].sample()
+    # obi_df.apply(lambda col: col.drop_duplicates().reset_index(drop=True))
+    # unique_value = UniqueResults(obi_df)
+    obi = obi_df.set_index(obi_df['username']).drop(["username", "date", "sourceLabel", "location", "likeCount", "retweetCount"], axis=1)
+    positive = random.choice(obi[obi['Analysis'] == 'Positive'])
+    negative = random.choice(obi[obi['Analysis'] == 'Negative'])
+    neutral = random.choice(obi[obi['Analysis'] == 'Neutral'])
     single = pd.concat([positive, negative, neutral])
     print("======================================")
     # return prediction
