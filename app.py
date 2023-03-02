@@ -316,7 +316,7 @@ def tinubu_sentiment():
     return sentiment_json_fromat(result)
 
 
-<<<<<<< HEAD
+
 def tinubu_location():
     cleaned_data = tinubu_tweet_df.apply(cleanText)
     clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
@@ -347,8 +347,7 @@ def tinubu_location():
     
 
 
-@app.route('/api/v1/sentiments/<candidate>', methods=['GET', 'POST'])
-=======
+
 
 @app.route('/api/v1/sentiment/predict/')
 def get_single_sentiment():
@@ -389,7 +388,6 @@ def get_single_sentiment():
 
 @app.route('/api/v1/sentiments/<candidate>')
 # class Sentiment(Resource):
->>>>>>> cda71b8008e31105750db9e91549c694f0627695
 def get_sentiments(candidate):
     sensor()
     if candidate == 'atiku':
@@ -453,11 +451,11 @@ def get():
     # print(prediction)
     obi_df['Analysis'] = prediction
     # obi_df.apply(lambda col: col.drop_duplicates().reset_index(drop=True))
-    unique_value = UniqueResults(obi_df)
-    obi = unique_value.set_index(obi_df['username']).drop(["username", "date", "sourceLabel", "location", "likeCount", "retweetCount"], axis=1)
-    positive = random.choice(obi[obi.Analysis == 'Positive'])
-    negative = random.choice(obi[obi.Analysis == 'Negative'])
-    neutral = random.choice(obi[obi.Analysis == 'Neutral'])
+    # unique_value = UniqueResults(obi_df)
+    obi = obi_df.set_index(obi_df['username']).drop(["username", "date", "sourceLabel", "location", "likeCount", "retweetCount"], axis=1)
+    positive = random.choice(obi[obi['Analysis'] == 'Positive'])
+    negative = random.choice(obi[obi['Analysis'] == 'Negative'])
+    neutral = random.choice(obi[obi['Analysis'] == 'Neutral'])
     single = pd.concat([positive, negative, neutral])
     print("======================================")
     # return prediction
