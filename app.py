@@ -312,10 +312,43 @@ def tinubu_sentiment():
     vectorizer.fit(clean_df['tweet'].values)
     vectorized = vectorizer.transform(clean_df['tweet'])
     vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
-    result = obi_model.predict(vectorized_df.values)
+    result = tinubu_model.predict(vectorized_df.values)
     return sentiment_json_fromat(result)
 
 
+<<<<<<< HEAD
+def tinubu_location():
+    cleaned_data = tinubu_tweet_df.apply(cleanText)
+    clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
+    vectorizer.fit(clean_df['tweet'].values)
+    vectorized = vectorizer.transform(clean_df['tweet'])
+    vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
+    result = obi_model.predict(vectorized_df.values)
+    location_df = tinubu_df
+    location_df['sentiment'] = result
+    neg_df = location_df[location_df['sentiment'] == 'negative']
+    neg_location = list(neg_df['location'])
+    neg_location = [str(i) for i in neg_location]
+    neg_location = [i.lower() for i in neg_location]
+    pattern = r"\b(abia|abuja|adamawa|akwa ibom|anambra|bauchi|bayelsa|benue|borno|cross river|delta|ebonyi|edo|ekiti|enugu|gombe|imo|jigawa|kaduna|kano|katsina|kebbi|kogi|kwara|lagos|nasarawa|niger|ogun|ondo|osun|oyo|plateau|rivers|sokoto|taraba|yobe|zamfara)\b"
+    counts = {}
+    for item in neg_location:
+        matches = re.findall(pattern, item, flags=re.IGNORECASE)
+        for match in matches:
+            key = match.lower()
+            if key in counts:
+                counts[key] += 1
+            else:
+                counts[key] = 1
+    count_df = pd.DataFrame.from_dict(counts, orient='index')
+    count_df.columns = ['location_count']
+    
+    return count_df.to_json()
+    
+
+
+@app.route('/api/v1/sentiments/<candidate>', methods=['GET', 'POST'])
+=======
 
 @app.route('/api/v1/sentiment/predict/')
 def get_single_sentiment():
@@ -356,6 +389,7 @@ def get_single_sentiment():
 
 @app.route('/api/v1/sentiments/<candidate>')
 # class Sentiment(Resource):
+>>>>>>> cda71b8008e31105750db9e91549c694f0627695
 def get_sentiments(candidate):
     sensor()
     if candidate == 'atiku':
@@ -386,6 +420,12 @@ def get_mentions(candidate):
         return get_obi_mention()
     else:
         return get_tinubu_mention()
+    
+    
+@app.route('/api/v1/neg-location/<candidate>', methods=['GET', 'POST'])
+def get_neg_locations(candidate):
+    if candidate == 'tinubu':
+        return tinubu_location()
 
 @app.route('/predict')
 # class Predict(Resource):
@@ -427,4 +467,4 @@ def get():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
