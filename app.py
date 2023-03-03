@@ -14,10 +14,8 @@ from collections import Counter
 from itertools import zip_longest
 import json
 
-
 app = flask.Flask(__name__)
 CORS(app)
-
 
 # trained models for each candidate and vectorizer
 
@@ -58,7 +56,6 @@ def sentiment_json_fromat(result):
     return value_df.set_index(value_df['Analysis']).drop("Analysis", axis=1).to_json(orient='columns')
 
 
-
 def UniqueResults(dataframe):
     tmp = [dataframe[col].unique() for col in dataframe]
     return pd.DataFrame(zip_longest(*tmp), columns=dataframe.columns)
@@ -67,14 +64,11 @@ def UniqueResults(dataframe):
 app = flask.Flask(__name__)
 CORS(app)
 
-
-
 # lists to capture extracted data from twitter
 
 result_atiku = []
 result_obi = []
 result_tinubu = []
-
 
 # time range for extracted twitter data
 current_date = datetime.date.today()
@@ -91,8 +85,9 @@ def sensor():
                 if i > 1000:
                     break
                 else:
-                    result_atiku.append([tweet.date, tweet.user.username, tweet.sourceLabel, tweet.content, tweet.user.location, tweet.likeCount, tweet.retweetCount])
-
+                    result_atiku.append(
+                        [tweet.date, tweet.user.username, tweet.sourceLabel, tweet.content, tweet.user.location,
+                         tweet.likeCount, tweet.retweetCount])
 
         if (candidate == 'obi'):
             result_obi.clear()
@@ -101,8 +96,9 @@ def sensor():
                 if i > 1000:
                     break
                 else:
-                    result_obi.append([tweet.date, tweet.user.username, tweet.sourceLabel, tweet.content, tweet.user.location, tweet.likeCount, tweet.retweetCount])
-
+                    result_obi.append(
+                        [tweet.date, tweet.user.username, tweet.sourceLabel, tweet.content, tweet.user.location,
+                         tweet.likeCount, tweet.retweetCount])
 
         if (candidate == 'tinubu'):
             result_tinubu.clear()
@@ -111,7 +107,9 @@ def sensor():
                 if i > 1000:
                     break
                 else:
-                    result_tinubu.append([tweet.date, tweet.user.username, tweet.sourceLabel, tweet.content, tweet.user.location, tweet.likeCount, tweet.retweetCount])
+                    result_tinubu.append(
+                        [tweet.date, tweet.user.username, tweet.sourceLabel, tweet.content, tweet.user.location,
+                         tweet.likeCount, tweet.retweetCount])
 
     combined = [result_atiku, result_obi, result_tinubu]
     return combined
@@ -120,13 +118,16 @@ def sensor():
 # compile extracted data into a list from which we pick individual data for the candidates
 combined_list = sensor().copy()
 
-atiku_df = pd.DataFrame(combined_list[0].copy(), columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
+atiku_df = pd.DataFrame(combined_list[0].copy(),
+                        columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
 atiku_tweet_df = atiku_df['tweet']
 
-obi_df = pd.DataFrame(combined_list[1].copy(), columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
+obi_df = pd.DataFrame(combined_list[1].copy(),
+                      columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
 obi_tweet_df = obi_df['tweet']
 
-tinubu_df = pd.DataFrame(combined_list[2].copy(), columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
+tinubu_df = pd.DataFrame(combined_list[2].copy(),
+                         columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
 tinubu_tweet_df = tinubu_df['tweet']
 
 atiku_sentiment_list = []
@@ -134,8 +135,6 @@ atiku_sentiment_list = []
 obi_sentiment_list = []
 
 tinubu_sentiment_list = []
-
-
 
 
 def mention(tweet):
@@ -151,23 +150,17 @@ def hashtag(tweet):
 atiku_df['mentions'] = atiku_df['tweet'].apply(mention)
 atiku_mentions_list = atiku_df['mentions'].tolist()
 
-
 obi_df['mentions'] = obi_df['tweet'].apply(mention)
 obi_mentions_list = obi_df['mentions'].tolist()
-
 
 tinubu_df['mentions'] = tinubu_df['tweet'].apply(mention)
 tinubu_mentions_list = tinubu_df['mentions'].tolist()
 
-
 atiku_df['hashtags'] = atiku_df['tweet'].apply(hashtag)
 atiku_hashtags_list = atiku_df['hashtags'].tolist()
 
-
-
 obi_df['hashtags'] = obi_df['tweet'].apply(hashtag)
 obi_hashtags_list = obi_df['hashtags'].tolist()
-
 
 tinubu_df['hashtags'] = tinubu_df['tweet'].apply(hashtag)
 tinubu_hashtags_list = tinubu_df['hashtags'].tolist()
@@ -185,9 +178,8 @@ def get_atiku_mention():
     mentions_df = pd.DataFrame.from_dict(counts, orient='index').reset_index()
     mentions_df.columns = ['Mentions', 'Count']
     mentions_df.sort_values(by='Count', ascending=False, inplace=True)
-    atiku_mentions_df = mentions_df[mentions_df['Mentions']=='atiku']
+    atiku_mentions_df = mentions_df[mentions_df['Mentions'] == 'atiku']
     return atiku_mentions_df.set_index(atiku_mentions_df['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
-
 
 
 def get_atiku_hash_tag():
@@ -204,8 +196,6 @@ def get_atiku_hash_tag():
     hashtags_df.sort_values(by='Hashtags_Count', ascending=False, inplace=True)
     sort = hashtags_df.head(10)
     return sort.set_index(sort['Hashtags']).drop("Hashtags", axis=1).to_json(orient='columns')
-
-
 
 
 def atiku_sentiment():
@@ -231,10 +221,8 @@ def get_obi_mention():
     mentions_df = pd.DataFrame.from_dict(counts, orient='index').reset_index()
     mentions_df.columns = ['Mentions', 'Count']
     mentions_df.sort_values(by='Count', ascending=False, inplace=True)
-    obi_mentions_df = mentions_df[mentions_df['Mentions']=='PeterObi']
+    obi_mentions_df = mentions_df[mentions_df['Mentions'] == 'PeterObi']
     return obi_mentions_df.set_index(obi_mentions_df['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
-
-
 
     # atiku_sentiment_list.append(result)
 
@@ -283,8 +271,10 @@ def get_tinubu_mention():
     mentions_df = pd.DataFrame.from_dict(counts, orient='index').reset_index()
     mentions_df.columns = ['Mentions', 'Count']
     mentions_df.sort_values(by='Count', ascending=False, inplace=True)
-    tinubu_mentions_df = mentions_df[mentions_df['Mentions']=='officialABAT']
-    return tinubu_mentions_df.set_index(tinubu_mentions_df['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
+    tinubu_mentions_df = mentions_df[mentions_df['Mentions'] == 'officialABAT']
+    return tinubu_mentions_df.set_index(tinubu_mentions_df['Mentions']).drop('Mentions', axis=1).to_json(
+        orient='columns')
+
 
 tinubu_df['hashtags'] = tinubu_df['tweet'].apply(hashtag)
 tinubu_hashtags_list = tinubu_df['hashtags'].tolist()
@@ -316,7 +306,6 @@ def tinubu_sentiment():
     return sentiment_json_fromat(result)
 
 
-
 def tinubu_location():
     cleaned_data = tinubu_tweet_df.apply(cleanText)
     clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
@@ -342,11 +331,8 @@ def tinubu_location():
                 counts[key] = 1
     count_df = pd.DataFrame.from_dict(counts, orient='index')
     count_df.columns = ['location_count']
-    
+
     return count_df.to_json()
-    
-
-
 
 
 @app.route('/api/v1/sentiment/predict/')
@@ -363,28 +349,22 @@ def get_single_sentiment():
 
     result = atiku_model.predict(vectorized_df.values)
 
-    result_df = pd.DataFrame(result, columns=['Analysis'], index=None)
+    # result_df = pd.DataFrame(result, columns=['Analysis'], index=None)
 
-
-    atiku_df1 = pd.concat([atiku_df, result_df])
-
-    print('===================================')
-    print(atiku_df.shape)
-    print('===================================')
-    print(result_df.shape)
-
-    print('===================================')
+    atiku_df['Analysis'] = pd.Series(result)
     # atiku_df.apply(lambda col: col.drop_duplicates().reset_index(drop=True))
     # unique_value = UniqueResults(atiku_df)
-    atiku = atiku_df1.set_index(atiku_df['username']).drop(["username", "date", "sourceLabel", "location", "likeCount", "retweetCount"], axis=1)
+    atiku_df.drop(["date", "sourceLabel", "location", "likeCount", "retweetCount"], axis=1)
+    atiku_df.dropna(how='all')
     # positive = atiku[atiku.Analysis == 'Positive'].sample()
     # negative = atiku[atiku.Analysis == 'Negative'].sample()
     # neutral = atiku[atiku.Analysis == 'Neutral'].sample()
-    positive = atiku.query("Analysis == Positive")
-    negative = atiku.query("Analysis == Negative")
-    neutral = atiku.query("Analysis == Neutral")
+    positive = atiku_df.query("Analysis == Positive")
+    negative = atiku_df.query("Analysis == Negative")
+    neutral = atiku_df.query("Analysis == Neutral")
     single = pd.concat([positive, negative, neutral])
     return single.to_json(orient='columns')
+
 
 @app.route('/api/v1/sentiments/<candidate>')
 # class Sentiment(Resource):
@@ -418,17 +398,17 @@ def get_mentions(candidate):
         return get_obi_mention()
     else:
         return get_tinubu_mention()
-    
-    
+
+
 @app.route('/api/v1/neg-location/<candidate>', methods=['GET', 'POST'])
 def get_neg_locations(candidate):
     if candidate == 'tinubu':
         return tinubu_location()
 
+
 @app.route('/predict')
 # class Predict(Resource):
 def get():
-    prediction = []
     # tweet = request.form['tweet']
     # df = pd.DataFrame([tweet], columns=['tweet'])
 
@@ -436,31 +416,29 @@ def get():
     # print(df_obi.head())
     # print("======================================")
 
-
     obi_df['tweet'] = obi_df['tweet'].apply(cleanText)
 
     # final_text = df['tweet']
     # final_text.iloc[0] = ' '.join(final_text.iloc[0])
 
-
     vectorizer.fit(obi_df['tweet'].values)
     final_text = vectorizer.transform(obi_df['tweet'])
-    prediction.append(obi_model.predict(final_text))
+    prediction = obi_model.predict(final_text)
     print("======================================")
     print("======================================")
     # print(prediction)
     obi_df['Analysis'] = prediction
     # obi_df.apply(lambda col: col.drop_duplicates().reset_index(drop=True))
     # unique_value = UniqueResults(obi_df)
-    obi = obi_df.set_index(obi_df['username']).drop(["username", "date", "sourceLabel", "location", "likeCount", "retweetCount"], axis=1)
-    positive = random.choice(obi[obi['Analysis'] == 'Positive'])
-    negative = random.choice(obi[obi['Analysis'] == 'Negative'])
-    neutral = random.choice(obi[obi['Analysis'] == 'Neutral'])
-    single = pd.concat([positive, negative, neutral])
+    positive = obi_df[obi_df['Analysis'] == 'Positive'].sample()
+    negative = obi_df[obi_df['Analysis'] == 'Negative'].sample()
+    neutral = obi_df[obi_df['Analysis'] == 'Neutral'].sample()
+    # positive = random.choice(pos)
+    # negative = random.choice(neg)
+    # neutral = random.choice(neu)
+    df = pd.concat([positive, negative, neutral])
+    single = df[['user', 'tweet', 'Analysis']]
     print("======================================")
-    # return prediction
-    # result = json.dumps(prediction)
-    # return json.dumps(str(prediction))
     return single.to_json(orient='columns')
 
 
