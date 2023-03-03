@@ -468,7 +468,6 @@ def tinubu_sentiment():
     return sentiment_json_fromat(result)
 
 
-
 def tinubu_neutral_location():
     cleaned_data = tinubu_tweet_df.apply(cleanText)
     clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
@@ -523,8 +522,7 @@ def tinubu_positive_location():
     return counts
 
 
-
-def tinubu_location():
+def tinubu_negative_location():
     cleaned_data = tinubu_tweet_df.apply(cleanText)
     clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
     vectorizer.fit(clean_df['tweet'].values)
@@ -552,45 +550,51 @@ def tinubu_location():
     
     # return count_df.to_json()
     return counts
+
+
+def single_tweet_sentiments():
+    cleaned_data = tinubu_tweet_df.apply(cleanText)
+    clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
+    vectorizer.fit(clean_df['tweet'].values)
+    vectorized = vectorizer.transform(clean_df['tweet'])
+    vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
+    result = obi_model.predict(vectorized_df.values)
+    single_df = tinubu_df
+    single_df['sentiment'] = result
+    neu_df = single_df[single_df['sentiment'] == 'neutral'].sample()
+    neg_df = single_df[single_df['sentiment'] == 'negative'].sample()
+    pos_df = single_df[single_df['sentiment'] == 'positive'].sample()
+    test = [neu_df, neg_df, pos_df]
+    result = pd.concat(test)
+    filtered_result = result[['username', 'tweet', 'sentiment']]
+    return filtered_result.to_json(orient='index')    
     
 
 
 @app.route('/api/v1/sentiment/predict/')
 def get_single_sentiment():
-    cleaned_data = atiku_tweet_df.apply(cleanText)
+    # cleaned_data = atiku_tweet_df.apply(cleanText)
 
-    clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
+    # clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
 
-    vectorizer.fit(clean_df['tweet'].values)
+    # vectorizer.fit(clean_df['tweet'].values)
 
-    vectorized = vectorizer.transform(clean_df['tweet'])
+    # vectorized = vectorizer.transform(clean_df['tweet'])
 
-    vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
+    # vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
 
-    result = atiku_model.predict(vectorized_df.values)
+    # result = atiku_model.predict(vectorized_df.values)
 
-    result_df = pd.DataFrame(result, columns=['Analysis'], index=None)
-
-
-    atiku_df1 = pd.concat([atiku_df, result_df])
-
-    print('===================================')
-    print(atiku_df.shape)
-    print('===================================')
-    print(result_df.shape)
-
-    print('===================================')
-    # atiku_df.apply(lambda col: col.drop_duplicates().reset_index(drop=True))
-    # unique_value = UniqueResults(atiku_df)
-    atiku = atiku_df1.set_index(atiku_df['username']).drop(["username", "date", "sourceLabel", "location", "likeCount", "retweetCount"], axis=1)
+    # atiku_df['Analysis'] = result
+    # # atiku_df.apply(lambda col: col.drop_duplicates().reset_index(drop=True))
+    # # unique_value = UniqueResults(atiku_df)
+    # atiku = atiku_df.set_index(atiku_df['username']).drop(["username", "date", "sourceLabel", "location", "likeCount", "retweetCount"], axis=1)
     # positive = atiku[atiku.Analysis == 'Positive'].sample()
     # negative = atiku[atiku.Analysis == 'Negative'].sample()
     # neutral = atiku[atiku.Analysis == 'Neutral'].sample()
-    positive = atiku.query("Analysis == Positive")
-    negative = atiku.query("Analysis == Negative")
-    neutral = atiku.query("Analysis == Neutral")
-    single = pd.concat([positive, negative, neutral])
-    return single.to_json(orient='columns')
+    # single = pd.concat([positive, negative, neutral])
+    # return single.to_json(orient='columns')
+    return single_tweet_sentiments()
 
 @app.route('/api/v1/sentiments/<candidate>')
 # class Sentiment(Resource):
