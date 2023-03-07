@@ -205,7 +205,6 @@ def atiku_sentiment():
     vectorized = vectorizer.transform(clean_df['tweet'])
     vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
     result = atiku_model.predict(vectorized_df.values)
-
     return sentiment_json_fromat(result)
 
 
@@ -232,7 +231,6 @@ def atiku_neutral_location():
                 counts[key] += 1
             else:
                 counts[key] = 1
-    
     return counts
 
 
@@ -259,7 +257,6 @@ def atiku_positive_location():
                 counts[key] += 1
             else:
                 counts[key] = 1
-    
     return counts
 
 
@@ -286,8 +283,25 @@ def atiku_negative_location():
                 counts[key] += 1
             else:
                 counts[key] = 1
-    
     return counts
+
+
+def atiku_single_tweet_sentiments():
+    cleaned_data = atiku_tweet_df.apply(cleanText)
+    clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
+    vectorizer.fit(clean_df['tweet'].values)
+    vectorized = vectorizer.transform(clean_df['tweet'])
+    vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
+    result = atiku_model.predict(vectorized_df.values)
+    single_df = atiku_df
+    single_df['sentiment'] = result
+    neu_df = single_df[single_df['sentiment'] == 'neutral'].sample()
+    neg_df = single_df[single_df['sentiment'] == 'negative'].sample()
+    pos_df = single_df[single_df['sentiment'] == 'positive'].sample()
+    test = [neu_df, neg_df, pos_df]
+    result = pd.concat(test)
+    filtered_result = result[['username', 'tweet', 'sentiment', 'likeCount', 'retweetCount']]
+    return filtered_result.to_json(orient='index')
 
 
 def get_obi_mention():
@@ -304,16 +318,6 @@ def get_obi_mention():
     mentions_df.sort_values(by='Count', ascending=False, inplace=True)
     obi_mentions_df = mentions_df[mentions_df['Mentions']=='PeterObi']
     return obi_mentions_df.set_index(obi_mentions_df['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
-
-
-
-    # atiku_sentiment_list.append(result)
-
-    return sentiment_json_fromat(result)
-
-
-# obi_df['hashtags'] = obi_df['tweet'].apply(hashtag)
-# obi_hashtags_list = obi_df['hashtags'].tolist()
 
 
 def get_obi_hash_tag():
@@ -365,7 +369,6 @@ def obi_neutral_location():
                 counts[key] += 1
             else:
                 counts[key] = 1
-    
     return counts
 
 
@@ -392,7 +395,6 @@ def obi_positive_location():
                 counts[key] += 1
             else:
                 counts[key] = 1
-    
     return counts
 
 
@@ -419,8 +421,25 @@ def obi_negative_location():
                 counts[key] += 1
             else:
                 counts[key] = 1
-    
     return counts
+
+
+def obi_single_tweet_sentiments():
+    cleaned_data = obi_tweet_df.apply(cleanText)
+    clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
+    vectorizer.fit(clean_df['tweet'].values)
+    vectorized = vectorizer.transform(clean_df['tweet'])
+    vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
+    result = obi_model.predict(vectorized_df.values)
+    single_df = obi_df
+    single_df['sentiment'] = result
+    neu_df = single_df[single_df['sentiment'] == 'neutral'].sample()
+    neg_df = single_df[single_df['sentiment'] == 'negative'].sample()
+    pos_df = single_df[single_df['sentiment'] == 'positive'].sample()
+    test = [neu_df, neg_df, pos_df]
+    result = pd.concat(test)
+    filtered_result = result[['username', 'tweet', 'sentiment', 'likeCount', 'retweetCount']]
+    return filtered_result.to_json(orient='index') 
 
 
 def get_tinubu_mention():
@@ -437,9 +456,6 @@ def get_tinubu_mention():
     mentions_df.sort_values(by='Count', ascending=False, inplace=True)
     tinubu_mentions_df = mentions_df[mentions_df['Mentions']=='officialABAT']
     return tinubu_mentions_df.set_index(tinubu_mentions_df['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
-
-# tinubu_df['hashtags'] = tinubu_df['tweet'].apply(hashtag)
-# tinubu_hashtags_list = tinubu_df['hashtags'].tolist()
 
 
 def get_tinubu_hash_tag():
@@ -491,7 +507,6 @@ def tinubu_neutral_location():
                 counts[key] += 1
             else:
                 counts[key] = 1
-    
     return counts
 
 
@@ -518,7 +533,6 @@ def tinubu_positive_location():
                 counts[key] += 1
             else:
                 counts[key] = 1
-    
     return counts
 
 
@@ -545,14 +559,10 @@ def tinubu_negative_location():
                 counts[key] += 1
             else:
                 counts[key] = 1
-    # count_df = pd.DataFrame.from_dict(counts, orient='index')
-    # count_df.columns = ['location_count']
-    
-    # return count_df.to_json()
     return counts
 
 
-def single_tweet_sentiments():
+def tinubu_single_tweet_sentiments():
     cleaned_data = tinubu_tweet_df.apply(cleanText)
     clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
     vectorizer.fit(clean_df['tweet'].values)
@@ -566,40 +576,30 @@ def single_tweet_sentiments():
     pos_df = single_df[single_df['sentiment'] == 'positive'].sample()
     test = [neu_df, neg_df, pos_df]
     result = pd.concat(test)
-    filtered_result = result[['username', 'tweet', 'sentiment']]
+    filtered_result = result[['username', 'tweet', 'sentiment', 'likeCount', 'retweetCount']]
     return filtered_result.to_json(orient='index')    
     
 
+@app.route('/api/v1/extract')
+def extract_data():
+    sensor()
+    return 'Extracted Successfully'
 
-@app.route('/api/v1/sentiment/predict/')
-def get_single_sentiment():
-    # cleaned_data = atiku_tweet_df.apply(cleanText)
 
-    # clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
+@app.route('/api/v1/single-sentiment/<candidate>')
+def get_single_sentiment(candidate):
+    if candidate == 'atiku':
+        return atiku_single_tweet_sentiments()
+    elif candidate == 'obi':
+        return obi_single_tweet_sentiments()
+    else:
+        return tinubu_single_tweet_sentiments()
 
-    # vectorizer.fit(clean_df['tweet'].values)
-
-    # vectorized = vectorizer.transform(clean_df['tweet'])
-
-    # vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
-
-    # result = atiku_model.predict(vectorized_df.values)
-
-    # atiku_df['Analysis'] = result
-    # # atiku_df.apply(lambda col: col.drop_duplicates().reset_index(drop=True))
-    # # unique_value = UniqueResults(atiku_df)
-    # atiku = atiku_df.set_index(atiku_df['username']).drop(["username", "date", "sourceLabel", "location", "likeCount", "retweetCount"], axis=1)
-    # positive = atiku[atiku.Analysis == 'Positive'].sample()
-    # negative = atiku[atiku.Analysis == 'Negative'].sample()
-    # neutral = atiku[atiku.Analysis == 'Neutral'].sample()
-    # single = pd.concat([positive, negative, neutral])
-    # return single.to_json(orient='columns')
-    return single_tweet_sentiments()
 
 @app.route('/api/v1/sentiments/<candidate>')
 # class Sentiment(Resource):
 def get_sentiments(candidate):
-    sensor()
+    # sensor()
     if candidate == 'atiku':
         return atiku_sentiment()
     elif candidate == 'obi':
