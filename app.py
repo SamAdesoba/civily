@@ -13,9 +13,9 @@ app = flask.Flask(__name__)
 CORS(app)
 
 # trained models for each candidate and vectorizer
-atiku_model = pickle.load(open('model_training/atiku/atiku_model_pickle.pkl', 'rb'))
-obi_model = pickle.load(open('model_training/obi/obi_model_pickle.pkl', 'rb'))
-tinubu_model = pickle.load(open('model_training/tinubu/log_reg_tinubu.pkl', 'rb'))
+atiku_model = pickle.load(open('model/atiku_model_pickle.pkl', 'rb'))
+obi_model = pickle.load(open('model/obi_model_pickle.pkl', 'rb'))
+tinubu_model = pickle.load(open('model/tinubu_model_pickle.pkl', 'rb'))
 
 vectorizer = CountVectorizer(max_features=1000, ngram_range=(1, 2), max_df=500)
 
@@ -42,7 +42,7 @@ def reformat_json(text):
     return text
 
 
-def sentiment_json_fromat(result):
+def sentiment_json_format(result):
     counts = Counter(result)
     value_df = pd.DataFrame.from_dict(counts, orient='index').reset_index()
     value_df.columns = ['Analysis', 'Sentiment_Count']
@@ -191,18 +191,31 @@ def get_location_counts(sentiment_df):
     return counts
 
 
-def neutral_location(candidate_tweet_df, candidate_model):
+def neutral_location(candidate_df, candidate_tweet_df, candidate_model):
     result = sentiment(candidate_tweet_df, candidate_model)
-    location_df = atiku_df
-    location_df['sentiment'] = result
-    neu_df = location_df[location_df['sentiment'] == 'neutral']
+    candidate_df['sentiment'] = result
+    neu_df = candidate_df[candidate_df['sentiment'] == 'neutral']
+    counts = get_location_counts(neu_df)
+    return counts
+
+
+def positive_location(candidate_df, candidate_tweet_df, candidate_model):
+    result = sentiment(candidate_tweet_df, candidate_model)
+    candidate_df['sentiment'] = result
+    neu_df = candidate_df[candidate_df['sentiment'] == 'positive']
+    counts = get_location_counts(neu_df)
+    return counts
+
+
+def negative_location(candidate_df, candidate_tweet_df, candidate_model):
+    result = sentiment(candidate_tweet_df, candidate_model)
+    candidate_df['sentiment'] = result
+    neu_df = candidate_df[candidate_df['sentiment'] == 'negative']
     counts = get_location_counts(neu_df)
     return counts
 
 
 def get_random_sentiment(candidate_df, result):
-    # single_df = candidate_df
-    # single_df['sentiment'] = result
     candidate_df['sentiment'] = result
     neu_df = candidate_df[candidate_df['sentiment'] == 'neutral'].sample()
     neg_df = candidate_df[candidate_df['sentiment'] == 'negative'].sample()
@@ -270,17 +283,17 @@ def get_tinubu_hash_tag():
 # General value_count sentiment functions
 def atiku_sentiment():
     result = sentiment(atiku_tweet_df, atiku_model)
-    return sentiment_json_fromat(result)
+    return sentiment_json_format(result)
 
 
 def obi_sentiment():
     result = sentiment(obi_tweet_df, obi_model)
-    return sentiment_json_fromat(result)
+    return sentiment_json_format(result)
 
 
 def tinubu_sentiment():
     result = sentiment(tinubu_tweet_df, tinubu_model)
-    return sentiment_json_fromat(result)
+    return sentiment_json_format(result)
 
 
 # Single sentiment functions
@@ -304,73 +317,39 @@ def tinubu_single_tweet_sentiments():
 
 # Location functions
 def atiku_neutral_location():
-    counts = neutral_location(atiku_tweet_df, atiku_model)
-    return counts
-
-
-def atiku_positive_location():
-    result = sentiment(atiku_tweet_df, atiku_model)
-    location_df = atiku_df
-    location_df['sentiment'] = result
-    pos_df = location_df[location_df['sentiment'] == 'positive']
-    counts = get_location_counts(pos_df)
-    return counts
-
-
-def atiku_negative_location():
-    result = sentiment(atiku_tweet_df, atiku_model)
-    location_df = atiku_df
-    location_df['sentiment'] = result
-    neg_df = location_df[location_df['sentiment'] == 'negative']
-    counts = get_location_counts(neg_df)
-    return counts
+    return neutral_location(atiku_df, atiku_tweet_df, atiku_model)
 
 
 def obi_neutral_location():
-    counts = neutral_location(obi_tweet_df, obi_model)
-    return counts
-
-
-def obi_positive_location():
-    result = sentiment(obi_tweet_df, obi_model)
-    location_df = obi_df
-    location_df['sentiment'] = result
-    pos_df = location_df[location_df['sentiment'] == 'positive']
-    counts = get_location_counts(pos_df)
-    return counts
-
-
-def obi_negative_location():
-    result = sentiment(obi_tweet_df, obi_model)
-    location_df = obi_df
-    location_df['sentiment'] = result
-    neg_df = location_df[location_df['sentiment'] == 'negative']
-    counts = get_location_counts(neg_df)
-    return counts
+    return neutral_location(obi_df, obi_tweet_df, obi_model)
 
 
 def tinubu_neutral_location():
-    result = sentiment(tinubu_tweet_df, tinubu_model)
-    counts = neutral_location(tinubu_tweet_df, tinubu_model)
-    return counts
+    return neutral_location(tinubu_df, tinubu_tweet_df, tinubu_model)
+
+
+def atiku_positive_location():
+    return positive_location(atiku_df, atiku_tweet_df, atiku_model)
+
+
+def obi_positive_location():
+    return positive_location(obi_df, obi_tweet_df, obi_model)
 
 
 def tinubu_positive_location():
-    result = sentiment(tinubu_tweet_df, tinubu_model)
-    location_df = tinubu_df
-    location_df['sentiment'] = result
-    pos_df = location_df[location_df['sentiment'] == 'positive']
-    counts = get_location_counts(pos_df)
-    return counts
+    return positive_location(tinubu_df, tinubu_tweet_df, tinubu_model)
+
+
+def atiku_negative_location():
+    return negative_location(atiku_df, atiku_tweet_df, atiku_model)
+
+
+def obi_negative_location():
+    return negative_location(obi_df, obi_tweet_df, obi_model)
 
 
 def tinubu_negative_location():
-    result = sentiment(tinubu_tweet_df, tinubu_model)
-    location_df = tinubu_df
-    location_df['sentiment'] = result
-    neg_df = location_df[location_df['sentiment'] == 'negative']
-    counts = get_location_counts(neg_df)
-    return counts
+    return negative_location(tinubu_df, tinubu_tweet_df, tinubu_model)
 
 
 @app.route('/api/v1/scrape')
