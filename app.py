@@ -1,28 +1,25 @@
-import random
-
 import flask
 from flask_cors import CORS
-from flask import jsonify
 import pickle
 import re
 import pandas as pd
-from sklearn import *
 from sklearn.feature_extraction.text import CountVectorizer
 import datetime
 import snscrape.modules.twitter as sntwitter
 from collections import Counter
-from itertools import zip_longest
-import json
-
+from apscheduler.schedulers.background import BackgroundScheduler
 
 app = flask.Flask(__name__)
 CORS(app)
 
 
+
+
+
 # trained models for each candidate and vectorizer
-atiku_model = pickle.load(open('model_training/atiku/atiku_model_pickle.pkl', 'rb'))
-obi_model = pickle.load(open('model_training/obi/obi_model_pickle.pkl', 'rb'))
-tinubu_model = pickle.load(open('model_training/tinubu/log_reg_tinubu.pkl', 'rb'))
+atiku_model = pickle.load(open('model/atiku_model_pickle.pkl', 'rb'))
+obi_model = pickle.load(open('model/obi_model_pickle.pkl', 'rb'))
+tinubu_model = pickle.load(open('model/tinubu_model_pickle.pkl', 'rb'))
 
 vectorizer = CountVectorizer(max_features=1000, ngram_range=(1, 2), max_df=500)
 
@@ -40,7 +37,7 @@ def cleanText(text):
     return text
 
 
-# function to clean extra characters fron the json returned ia the api
+# function to clean extra characters from the json returned ia the api
 def reformat_json(text):
     text = re.sub(r'\"', ' ', text)
     text = re.sub(r'\,.', ' ', text)
@@ -49,7 +46,7 @@ def reformat_json(text):
     return text
 
 
-def sentiment_json_fromat(result):
+def sentiment_json_format(result):
     counts = Counter(result)
     value_df = pd.DataFrame.from_dict(counts, orient='index').reset_index()
     value_df.columns = ['Analysis', 'Sentiment_Count']
@@ -57,20 +54,13 @@ def sentiment_json_fromat(result):
     return value_df.set_index(value_df['Analysis']).drop("Analysis", axis=1).to_json(orient='columns')
 
 
-def UniqueResults(dataframe):
-    tmp = [dataframe[col].unique() for col in dataframe]
-    return pd.DataFrame(zip_longest(*tmp), columns=dataframe.columns)
-
-
 app = flask.Flask(__name__)
 CORS(app)
-
 
 # lists to capture extracted data from twitter
 result_atiku = []
 result_obi = []
 result_tinubu = []
-
 
 # time range for extracted twitter data
 current_date = datetime.date.today()
@@ -87,8 +77,9 @@ def sensor():
                 if i > 1000:
                     break
                 else:
-                    result_atiku.append([tweet.date, tweet.user.username, tweet.sourceLabel, tweet.content, tweet.user.location, tweet.likeCount, tweet.retweetCount])
-
+                    result_atiku.append(
+                        [tweet.date, tweet.user.username, tweet.sourceLabel, tweet.content, tweet.user.location,
+                         tweet.likeCount, tweet.retweetCount])
 
         if (candidate == 'obi'):
             result_obi.clear()
@@ -97,8 +88,9 @@ def sensor():
                 if i > 1000:
                     break
                 else:
-                    result_obi.append([tweet.date, tweet.user.username, tweet.sourceLabel, tweet.content, tweet.user.location, tweet.likeCount, tweet.retweetCount])
-
+                    result_obi.append(
+                        [tweet.date, tweet.user.username, tweet.sourceLabel, tweet.content, tweet.user.location,
+                         tweet.likeCount, tweet.retweetCount])
 
         if (candidate == 'tinubu'):
             result_tinubu.clear()
@@ -107,22 +99,30 @@ def sensor():
                 if i > 1000:
                     break
                 else:
-                    result_tinubu.append([tweet.date, tweet.user.username, tweet.sourceLabel, tweet.content, tweet.user.location, tweet.likeCount, tweet.retweetCount])
+                    result_tinubu.append(
+                        [tweet.date, tweet.user.username, tweet.sourceLabel, tweet.content, tweet.user.location,
+                         tweet.likeCount, tweet.retweetCount])
 
-    combined = [result_atiku, result_obi, result_tinubu]
-    return combined
+
+sched = BackgroundScheduler()
+sched.add_job(sensor, 'cron', minute='0-59/10')
+
+sched.start()
 
 
 # compile extracted data into a list from which we pick individual data for the candidates
-combined_list = sensor().copy()
+sensor()
 
-atiku_df = pd.DataFrame(combined_list[0].copy(), columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
+atiku_df = pd.DataFrame(result_atiku.copy(),
+                        columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
 atiku_tweet_df = atiku_df['tweet']
 
-obi_df = pd.DataFrame(combined_list[1].copy(), columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
+obi_df = pd.DataFrame(result_obi.copy(),
+                      columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
 obi_tweet_df = obi_df['tweet']
 
-tinubu_df = pd.DataFrame(combined_list[2].copy(), columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
+tinubu_df = pd.DataFrame(result_tinubu.copy(),
+                         columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
 tinubu_tweet_df = tinubu_df['tweet']
 
 atiku_sentiment_list = []
@@ -137,453 +137,226 @@ def mention(tweet):
     return ' '.join(mentions)
 
 
+def mentions(candidate_mention_list):
+    mention = []
+    mention.clear()
+    for item in candidate_mention_list:
+        item = item.split()
+        for i in item:
+            mention.append(i)
+    counts = Counter(mention)
+    mentions_df = pd.DataFrame.from_dict(counts, orient='index').reset_index()
+    mentions_df.columns = ['Mentions', 'Count']
+    mentions_df.sort_values(by='Count', ascending=False, inplace=True)
+    return mentions_df
+
+
 def hashtag(tweet):
     tags = re.findall(r'#(\w+)', tweet)
     return ' '.join(tags)
 
 
+def hash_tag(candidate_hashtag_list):
+    hashtags = []
+    hashtags.clear()
+    for item in candidate_hashtag_list:
+        item = item.split()
+        for i in item:
+            hashtags.append(i)
+    counts = Counter(hashtags)
+    hashtags_df = pd.DataFrame.from_dict(counts, orient='index').reset_index()
+    hashtags_df.columns = ['Hashtags', 'Hashtags_Count']
+    hashtags_df.sort_values(by='Hashtags_Count', ascending=False, inplace=True)
+    sort = hashtags_df.head(10)
+    return sort
+
+
+def sentiment(candidate_tweet_df, candidate_model):
+    cleaned_data = candidate_tweet_df.apply(cleanText)
+    clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
+    vectorizer.fit(clean_df['tweet'].values)
+    vectorized = vectorizer.transform(clean_df['tweet'])
+    vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
+    result = candidate_model.predict(vectorized_df.values)
+    return result
+
+
+def get_location_counts(sentiment_df):
+    location = list(sentiment_df['location'])
+    location = [str(i) for i in location]
+    location = [i.lower() for i in location]
+    pattern = r"\b(abia|abuja|adamawa|akwa ibom|anambra|bauchi|bayelsa|benue|borno|cross river|delta|ebonyi|edo|ekiti|enugu|gombe|imo|jigawa|kaduna|kano|katsina|kebbi|kogi|kwara|lagos|nasarawa|niger|ogun|ondo|osun|oyo|plateau|rivers|sokoto|taraba|yobe|zamfara)\b"
+    counts = {}
+    for item in location:
+        matches = re.findall(pattern, item, flags=re.IGNORECASE)
+        for match in matches:
+            key = match.lower()
+            if key in counts:
+                counts[key] += 1
+            else:
+                counts[key] = 1
+    return counts
+
+
+def neutral_location(candidate_df, candidate_tweet_df, candidate_model):
+    result = sentiment(candidate_tweet_df, candidate_model)
+    candidate_df['sentiment'] = result
+    neu_df = candidate_df[candidate_df['sentiment'] == 'neutral']
+    counts = get_location_counts(neu_df)
+    return counts
+
+
+def positive_location(candidate_df, candidate_tweet_df, candidate_model):
+    result = sentiment(candidate_tweet_df, candidate_model)
+    candidate_df['sentiment'] = result
+    neu_df = candidate_df[candidate_df['sentiment'] == 'positive']
+    counts = get_location_counts(neu_df)
+    return counts
+
+
+def negative_location(candidate_df, candidate_tweet_df, candidate_model):
+    result = sentiment(candidate_tweet_df, candidate_model)
+    candidate_df['sentiment'] = result
+    neu_df = candidate_df[candidate_df['sentiment'] == 'negative']
+    counts = get_location_counts(neu_df)
+    return counts
+
+
+def get_random_sentiment(candidate_df, result):
+    candidate_df['sentiment'] = result
+    neu_df = candidate_df[candidate_df['sentiment'] == 'neutral'].sample()
+    neg_df = candidate_df[candidate_df['sentiment'] == 'negative'].sample()
+    pos_df = candidate_df[candidate_df['sentiment'] == 'positive'].sample()
+    test = [neu_df, neg_df, pos_df]
+    result = pd.concat(test)
+    filtered_result = result[['username', 'tweet', 'sentiment', 'likeCount', 'retweetCount']]
+    return filtered_result
+
+
 atiku_df['mentions'] = atiku_df['tweet'].apply(mention)
 atiku_mentions_list = atiku_df['mentions'].tolist()
-
 
 obi_df['mentions'] = obi_df['tweet'].apply(mention)
 obi_mentions_list = obi_df['mentions'].tolist()
 
-
 tinubu_df['mentions'] = tinubu_df['tweet'].apply(mention)
 tinubu_mentions_list = tinubu_df['mentions'].tolist()
-
 
 atiku_df['hashtags'] = atiku_df['tweet'].apply(hashtag)
 atiku_hashtags_list = atiku_df['hashtags'].tolist()
 
-
 obi_df['hashtags'] = obi_df['tweet'].apply(hashtag)
 obi_hashtags_list = obi_df['hashtags'].tolist()
-
 
 tinubu_df['hashtags'] = tinubu_df['tweet'].apply(hashtag)
 tinubu_hashtags_list = tinubu_df['hashtags'].tolist()
 
 
+# Mentions functions
 def get_atiku_mention():
-    atiku_mentions = []
-    atiku_mentions.clear()
-    for item in atiku_mentions_list:
-        item = item.split()
-        for i in item:
-            atiku_mentions.append(i)
-
-    counts = Counter(atiku_mentions)
-    mentions_df = pd.DataFrame.from_dict(counts, orient='index').reset_index()
-    mentions_df.columns = ['Mentions', 'Count']
-    mentions_df.sort_values(by='Count', ascending=False, inplace=True)
-    atiku_mentions_df = mentions_df[mentions_df['Mentions']=='atiku']
-    return atiku_mentions_df.set_index(atiku_mentions_df['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
-
-
-def get_atiku_hash_tag():
-    atiku_hashtags = []
-    atiku_hashtags.clear()
-    for item in atiku_hashtags_list:
-        item = item.split()
-        for i in item:
-            atiku_hashtags.append(i)
-
-    counts = Counter(atiku_hashtags)
-    hashtags_df = pd.DataFrame.from_dict(counts, orient='index').reset_index()
-    hashtags_df.columns = ['Hashtags', 'Hashtags_Count']
-    hashtags_df.sort_values(by='Hashtags_Count', ascending=False, inplace=True)
-    sort = hashtags_df.head(10)
-    return sort.set_index(sort['Hashtags']).drop("Hashtags", axis=1).to_json(orient='columns')
-
-
-def atiku_sentiment():
-    cleaned_data = atiku_tweet_df.apply(cleanText)
-    clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
-    vectorizer.fit(clean_df['tweet'].values)
-    vectorized = vectorizer.transform(clean_df['tweet'])
-    vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
-    result = atiku_model.predict(vectorized_df.values)
-    return sentiment_json_fromat(result)
-
-
-def atiku_neutral_location():
-    cleaned_data = atiku_tweet_df.apply(cleanText)
-    clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
-    vectorizer.fit(clean_df['tweet'].values)
-    vectorized = vectorizer.transform(clean_df['tweet'])
-    vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
-    result = atiku_model.predict(vectorized_df.values)
-    location_df = atiku_df
-    location_df['sentiment'] = result
-    neu_df = location_df[location_df['sentiment'] == 'neutral']
-    neu_location = list(neu_df['location'])
-    neu_location = [str(i) for i in neu_location]
-    neu_location = [i.lower() for i in neu_location]
-    pattern = r"\b(abia|abuja|adamawa|akwa ibom|anambra|bauchi|bayelsa|benue|borno|cross river|delta|ebonyi|edo|ekiti|enugu|gombe|imo|jigawa|kaduna|kano|katsina|kebbi|kogi|kwara|lagos|nasarawa|niger|ogun|ondo|osun|oyo|plateau|rivers|sokoto|taraba|yobe|zamfara)\b"
-    counts = {}
-    for item in neu_location:
-        matches = re.findall(pattern, item, flags=re.IGNORECASE)
-        for match in matches:
-            key = match.lower()
-            if key in counts:
-                counts[key] += 1
-            else:
-                counts[key] = 1
-    return counts
-
-
-def atiku_positive_location():
-    cleaned_data = atiku_tweet_df.apply(cleanText)
-    clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
-    vectorizer.fit(clean_df['tweet'].values)
-    vectorized = vectorizer.transform(clean_df['tweet'])
-    vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
-    result = atiku_model.predict(vectorized_df.values)
-    location_df = atiku_df
-    location_df['sentiment'] = result
-    pos_df = location_df[location_df['sentiment'] == 'positive']
-    pos_location = list(pos_df['location'])
-    pos_location = [str(i) for i in pos_location]
-    pos_location = [i.lower() for i in pos_location]
-    pattern = r"\b(abia|abuja|adamawa|akwa ibom|anambra|bauchi|bayelsa|benue|borno|cross river|delta|ebonyi|edo|ekiti|enugu|gombe|imo|jigawa|kaduna|kano|katsina|kebbi|kogi|kwara|lagos|nasarawa|niger|ogun|ondo|osun|oyo|plateau|rivers|sokoto|taraba|yobe|zamfara)\b"
-    counts = {}
-    for item in pos_location:
-        matches = re.findall(pattern, item, flags=re.IGNORECASE)
-        for match in matches:
-            key = match.lower()
-            if key in counts:
-                counts[key] += 1
-            else:
-                counts[key] = 1
-    return counts
-
-
-def atiku_negative_location():
-    cleaned_data = atiku_tweet_df.apply(cleanText)
-    clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
-    vectorizer.fit(clean_df['tweet'].values)
-    vectorized = vectorizer.transform(clean_df['tweet'])
-    vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
-    result = atiku_model.predict(vectorized_df.values)
-    location_df = atiku_df
-    location_df['sentiment'] = result
-    neg_df = location_df[location_df['sentiment'] == 'negative']
-    neg_location = list(neg_df['location'])
-    neg_location = [str(i) for i in neg_location]
-    neg_location = [i.lower() for i in neg_location]
-    pattern = r"\b(abia|abuja|adamawa|akwa ibom|anambra|bauchi|bayelsa|benue|borno|cross river|delta|ebonyi|edo|ekiti|enugu|gombe|imo|jigawa|kaduna|kano|katsina|kebbi|kogi|kwara|lagos|nasarawa|niger|ogun|ondo|osun|oyo|plateau|rivers|sokoto|taraba|yobe|zamfara)\b"
-    counts = {}
-    for item in neg_location:
-        matches = re.findall(pattern, item, flags=re.IGNORECASE)
-        for match in matches:
-            key = match.lower()
-            if key in counts:
-                counts[key] += 1
-            else:
-                counts[key] = 1
-    return counts
-
-
-def atiku_single_tweet_sentiments():
-    cleaned_data = atiku_tweet_df.apply(cleanText)
-    clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
-    vectorizer.fit(clean_df['tweet'].values)
-    vectorized = vectorizer.transform(clean_df['tweet'])
-    vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
-    result = atiku_model.predict(vectorized_df.values)
-    single_df = atiku_df
-    single_df['sentiment'] = result
-    neu_df = single_df[single_df['sentiment'] == 'neutral'].sample()
-    neg_df = single_df[single_df['sentiment'] == 'negative'].sample()
-    pos_df = single_df[single_df['sentiment'] == 'positive'].sample()
-    test = [neu_df, neg_df, pos_df]
-    result = pd.concat(test)
-    filtered_result = result[['username', 'tweet', 'sentiment', 'likeCount', 'retweetCount']]
-    return filtered_result.to_json(orient='index')
+    atiku_mentions_df = mentions(atiku_mentions_list)
+    atiku_mentions = atiku_mentions_df[atiku_mentions_df['Mentions'] == 'atiku']
+    return atiku_mentions.set_index(atiku_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
 
 
 def get_obi_mention():
-    obi_mentions = []
-    obi_mentions.clear()
-    for item in obi_mentions_list:
-        item = item.split()
-        for i in item:
-            obi_mentions.append(i)
-
-    counts = Counter(obi_mentions)
-    mentions_df = pd.DataFrame.from_dict(counts, orient='index').reset_index()
-    mentions_df.columns = ['Mentions', 'Count']
-    mentions_df.sort_values(by='Count', ascending=False, inplace=True)
-    obi_mentions_df = mentions_df[mentions_df['Mentions']=='PeterObi']
+    mentions_df = mentions(obi_mentions_list)
+    obi_mentions_df = mentions_df[mentions_df['Mentions'] == 'PeterObi']
     return obi_mentions_df.set_index(obi_mentions_df['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
 
 
-def get_obi_hash_tag():
-    obi_hashtags = []
-    obi_hashtags.clear()
-    for item in obi_hashtags_list:
-        item = item.split()
-        for i in item:
-            obi_hashtags.append(i)
+def get_tinubu_mention():
+    mentions_df = mentions(tinubu_mentions_list)
+    tinubu_mentions = mentions_df[mentions_df['Mentions'] == 'officialABAT']
+    return tinubu_mentions.set_index(tinubu_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
 
-    counts = Counter(obi_hashtags)
-    hashtags_df = pd.DataFrame.from_dict(counts, orient='index').reset_index()
-    hashtags_df.columns = ['Hashtags', 'Hashtags_Count']
-    hashtags_df.sort_values(by='Hashtags_Count', ascending=False, inplace=True)
-    sort = hashtags_df.head(10)
+
+# Hashtag functions
+def get_atiku_hash_tag():
+    sort = hash_tag(atiku_hashtags_list)
     return sort.set_index(sort['Hashtags']).drop("Hashtags", axis=1).to_json(orient='columns')
 
 
-def obi_sentiment():
-    cleaned_data = obi_tweet_df.apply(cleanText)
-    clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
-    vectorizer.fit(clean_df['tweet'].values)
-    vectorized = vectorizer.transform(clean_df['tweet'])
-    vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
-    result = obi_model.predict(vectorized_df.values)
-    return sentiment_json_fromat(result)
-
-
-def obi_neutral_location():
-    cleaned_data = obi_tweet_df.apply(cleanText)
-    clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
-    vectorizer.fit(clean_df['tweet'].values)
-    vectorized = vectorizer.transform(clean_df['tweet'])
-    vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
-    result = obi_model.predict(vectorized_df.values)
-    location_df = obi_df
-    location_df['sentiment'] = result
-    neu_df = location_df[location_df['sentiment'] == 'neutral']
-    neu_location = list(neu_df['location'])
-    neu_location = [str(i) for i in neu_location]
-    neu_location = [i.lower() for i in neu_location]
-    pattern = r"\b(abia|abuja|adamawa|akwa ibom|anambra|bauchi|bayelsa|benue|borno|cross river|delta|ebonyi|edo|ekiti|enugu|gombe|imo|jigawa|kaduna|kano|katsina|kebbi|kogi|kwara|lagos|nasarawa|niger|ogun|ondo|osun|oyo|plateau|rivers|sokoto|taraba|yobe|zamfara)\b"
-    counts = {}
-    for item in neu_location:
-        matches = re.findall(pattern, item, flags=re.IGNORECASE)
-        for match in matches:
-            key = match.lower()
-            if key in counts:
-                counts[key] += 1
-            else:
-                counts[key] = 1
-    return counts
-
-
-def obi_positive_location():
-    cleaned_data = obi_tweet_df.apply(cleanText)
-    clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
-    vectorizer.fit(clean_df['tweet'].values)
-    vectorized = vectorizer.transform(clean_df['tweet'])
-    vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
-    result = obi_model.predict(vectorized_df.values)
-    location_df = obi_df
-    location_df['sentiment'] = result
-    pos_df = location_df[location_df['sentiment'] == 'positive']
-    pos_location = list(pos_df['location'])
-    pos_location = [str(i) for i in pos_location]
-    pos_location = [i.lower() for i in pos_location]
-    pattern = r"\b(abia|abuja|adamawa|akwa ibom|anambra|bauchi|bayelsa|benue|borno|cross river|delta|ebonyi|edo|ekiti|enugu|gombe|imo|jigawa|kaduna|kano|katsina|kebbi|kogi|kwara|lagos|nasarawa|niger|ogun|ondo|osun|oyo|plateau|rivers|sokoto|taraba|yobe|zamfara)\b"
-    counts = {}
-    for item in pos_location:
-        matches = re.findall(pattern, item, flags=re.IGNORECASE)
-        for match in matches:
-            key = match.lower()
-            if key in counts:
-                counts[key] += 1
-            else:
-                counts[key] = 1
-    return counts
-
-
-def obi_negative_location():
-    cleaned_data = obi_tweet_df.apply(cleanText)
-    clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
-    vectorizer.fit(clean_df['tweet'].values)
-    vectorized = vectorizer.transform(clean_df['tweet'])
-    vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
-    result = obi_model.predict(vectorized_df.values)
-    location_df = obi_df
-    location_df['sentiment'] = result
-    neg_df = location_df[location_df['sentiment'] == 'negative']
-    neg_location = list(neg_df['location'])
-    neg_location = [str(i) for i in neg_location]
-    neg_location = [i.lower() for i in neg_location]
-    pattern = r"\b(abia|abuja|adamawa|akwa ibom|anambra|bauchi|bayelsa|benue|borno|cross river|delta|ebonyi|edo|ekiti|enugu|gombe|imo|jigawa|kaduna|kano|katsina|kebbi|kogi|kwara|lagos|nasarawa|niger|ogun|ondo|osun|oyo|plateau|rivers|sokoto|taraba|yobe|zamfara)\b"
-    counts = {}
-    for item in neg_location:
-        matches = re.findall(pattern, item, flags=re.IGNORECASE)
-        for match in matches:
-            key = match.lower()
-            if key in counts:
-                counts[key] += 1
-            else:
-                counts[key] = 1
-    return counts
-
-
-def obi_single_tweet_sentiments():
-    cleaned_data = obi_tweet_df.apply(cleanText)
-    clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
-    vectorizer.fit(clean_df['tweet'].values)
-    vectorized = vectorizer.transform(clean_df['tweet'])
-    vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
-    result = obi_model.predict(vectorized_df.values)
-    single_df = obi_df
-    single_df['sentiment'] = result
-    neu_df = single_df[single_df['sentiment'] == 'neutral'].sample()
-    neg_df = single_df[single_df['sentiment'] == 'negative'].sample()
-    pos_df = single_df[single_df['sentiment'] == 'positive'].sample()
-    test = [neu_df, neg_df, pos_df]
-    result = pd.concat(test)
-    filtered_result = result[['username', 'tweet', 'sentiment', 'likeCount', 'retweetCount']]
-    return filtered_result.to_json(orient='index') 
-
-
-def get_tinubu_mention():
-    tinubu_mentions = []
-    tinubu_mentions.clear()
-    for item in tinubu_mentions_list:
-        item = item.split()
-        for i in item:
-            tinubu_mentions.append(i)
-
-    counts = Counter(tinubu_mentions)
-    mentions_df = pd.DataFrame.from_dict(counts, orient='index').reset_index()
-    mentions_df.columns = ['Mentions', 'Count']
-    mentions_df.sort_values(by='Count', ascending=False, inplace=True)
-    tinubu_mentions_df = mentions_df[mentions_df['Mentions']=='officialABAT']
-    return tinubu_mentions_df.set_index(tinubu_mentions_df['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
+def get_obi_hash_tag():
+    sort = hash_tag(obi_hashtags_list)
+    return sort.set_index(sort['Hashtags']).drop("Hashtags", axis=1).to_json(orient='columns')
 
 
 def get_tinubu_hash_tag():
-    tinubu_hashtags = []
-    tinubu_hashtags.clear()
-    for item in tinubu_hashtags_list:
-        item = item.split()
-        for i in item:
-            tinubu_hashtags.append(i)
-
-    counts = Counter(tinubu_hashtags)
-    hashtags_df = pd.DataFrame.from_dict(counts, orient='index').reset_index()
-    hashtags_df.columns = ['Hashtags', 'Hashtags_Count']
-    hashtags_df.sort_values(by='Hashtags_Count', ascending=False, inplace=True)
-    sort = hashtags_df.head(10)
+    sort = hash_tag(tinubu_hashtags_list)
     return sort.set_index(sort['Hashtags']).drop("Hashtags", axis=1).to_json(orient='columns')
 
 
+# General value_count sentiment functions
+def atiku_sentiment():
+    result = sentiment(atiku_tweet_df, atiku_model)
+    return sentiment_json_format(result)
+
+
+def obi_sentiment():
+    result = sentiment(obi_tweet_df, obi_model)
+    return sentiment_json_format(result)
+
+
 def tinubu_sentiment():
-    cleaned_data = tinubu_tweet_df.apply(cleanText)
-    clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
-    vectorizer.fit(clean_df['tweet'].values)
-    vectorized = vectorizer.transform(clean_df['tweet'])
-    vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
-    result = obi_model.predict(vectorized_df.values)
-    return sentiment_json_fromat(result)
+    result = sentiment(tinubu_tweet_df, tinubu_model)
+    return sentiment_json_format(result)
 
 
-def tinubu_neutral_location():
-    cleaned_data = tinubu_tweet_df.apply(cleanText)
-    clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
-    vectorizer.fit(clean_df['tweet'].values)
-    vectorized = vectorizer.transform(clean_df['tweet'])
-    vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
-    result = obi_model.predict(vectorized_df.values)
-    location_df = tinubu_df
-    location_df['sentiment'] = result
-    neu_df = location_df[location_df['sentiment'] == 'neutral']
-    neu_location = list(neu_df['location'])
-    neu_location = [str(i) for i in neu_location]
-    neu_location = [i.lower() for i in neu_location]
-    pattern = r"\b(abia|abuja|adamawa|akwa ibom|anambra|bauchi|bayelsa|benue|borno|cross river|delta|ebonyi|edo|ekiti|enugu|gombe|imo|jigawa|kaduna|kano|katsina|kebbi|kogi|kwara|lagos|nasarawa|niger|ogun|ondo|osun|oyo|plateau|rivers|sokoto|taraba|yobe|zamfara)\b"
-    counts = {}
-    for item in neu_location:
-        matches = re.findall(pattern, item, flags=re.IGNORECASE)
-        for match in matches:
-            key = match.lower()
-            if key in counts:
-                counts[key] += 1
-            else:
-                counts[key] = 1
-    return counts
+# Single sentiment functions
+def atiku_single_tweet_sentiments():
+    result = sentiment(atiku_tweet_df, atiku_model)
+    filtered_result = get_random_sentiment(atiku_df, result)
+    return filtered_result.to_dict(orient='records')
 
 
-def tinubu_positive_location():
-    cleaned_data = tinubu_tweet_df.apply(cleanText)
-    clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
-    vectorizer.fit(clean_df['tweet'].values)
-    vectorized = vectorizer.transform(clean_df['tweet'])
-    vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
-    result = obi_model.predict(vectorized_df.values)
-    location_df = tinubu_df
-    location_df['sentiment'] = result
-    pos_df = location_df[location_df['sentiment'] == 'positive']
-    pos_location = list(pos_df['location'])
-    pos_location = [str(i) for i in pos_location]
-    pos_location = [i.lower() for i in pos_location]
-    pattern = r"\b(abia|abuja|adamawa|akwa ibom|anambra|bauchi|bayelsa|benue|borno|cross river|delta|ebonyi|edo|ekiti|enugu|gombe|imo|jigawa|kaduna|kano|katsina|kebbi|kogi|kwara|lagos|nasarawa|niger|ogun|ondo|osun|oyo|plateau|rivers|sokoto|taraba|yobe|zamfara)\b"
-    counts = {}
-    for item in pos_location:
-        matches = re.findall(pattern, item, flags=re.IGNORECASE)
-        for match in matches:
-            key = match.lower()
-            if key in counts:
-                counts[key] += 1
-            else:
-                counts[key] = 1
-    return counts
-
-
-def tinubu_negative_location():
-    cleaned_data = tinubu_tweet_df.apply(cleanText)
-    clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
-    vectorizer.fit(clean_df['tweet'].values)
-    vectorized = vectorizer.transform(clean_df['tweet'])
-    vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
-    result = obi_model.predict(vectorized_df.values)
-    location_df = tinubu_df
-    location_df['sentiment'] = result
-    neg_df = location_df[location_df['sentiment'] == 'negative']
-    neg_location = list(neg_df['location'])
-    neg_location = [str(i) for i in neg_location]
-    neg_location = [i.lower() for i in neg_location]
-    pattern = r"\b(abia|abuja|adamawa|akwa ibom|anambra|bauchi|bayelsa|benue|borno|cross river|delta|ebonyi|edo|ekiti|enugu|gombe|imo|jigawa|kaduna|kano|katsina|kebbi|kogi|kwara|lagos|nasarawa|niger|ogun|ondo|osun|oyo|plateau|rivers|sokoto|taraba|yobe|zamfara)\b"
-    counts = {}
-    for item in neg_location:
-        matches = re.findall(pattern, item, flags=re.IGNORECASE)
-        for match in matches:
-            key = match.lower()
-            if key in counts:
-                counts[key] += 1
-            else:
-                counts[key] = 1
-    return counts
+def obi_single_tweet_sentiments():
+    result = sentiment(obi_tweet_df, obi_model)
+    filtered_result = get_random_sentiment(obi_df, result)
+    return filtered_result.to_dict(orient='records')
 
 
 def tinubu_single_tweet_sentiments():
-    cleaned_data = tinubu_tweet_df.apply(cleanText)
-    clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
-    vectorizer.fit(clean_df['tweet'].values)
-    vectorized = vectorizer.transform(clean_df['tweet'])
-    vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
-    result = obi_model.predict(vectorized_df.values)
-    single_df = tinubu_df
-    single_df['sentiment'] = result
-    neu_df = single_df[single_df['sentiment'] == 'neutral'].sample()
-    neg_df = single_df[single_df['sentiment'] == 'negative'].sample()
-    pos_df = single_df[single_df['sentiment'] == 'positive'].sample()
-    test = [neu_df, neg_df, pos_df]
-    result = pd.concat(test)
-    filtered_result = result[['username', 'tweet', 'sentiment', 'likeCount', 'retweetCount']]
-    return filtered_result.to_json(orient='index')    
-    
+    result = sentiment(tinubu_tweet_df, tinubu_model)
+    filtered_result = get_random_sentiment(tinubu_df, result)
+    return filtered_result.to_dict(orient='records')
 
-@app.route('/api/v1/extract')
-def extract_data():
-    sensor()
-    return 'Extracted Successfully'
+
+# Location functions
+def atiku_neutral_location():
+    return neutral_location(atiku_df, atiku_tweet_df, atiku_model)
+
+
+def obi_neutral_location():
+    return neutral_location(obi_df, obi_tweet_df, obi_model)
+
+
+def tinubu_neutral_location():
+    return neutral_location(tinubu_df, tinubu_tweet_df, tinubu_model)
+
+
+def atiku_positive_location():
+    return positive_location(atiku_df, atiku_tweet_df, atiku_model)
+
+
+def obi_positive_location():
+    return positive_location(obi_df, obi_tweet_df, obi_model)
+
+
+def tinubu_positive_location():
+    return positive_location(tinubu_df, tinubu_tweet_df, tinubu_model)
+
+
+def atiku_negative_location():
+    return negative_location(atiku_df, atiku_tweet_df, atiku_model)
+
+
+def obi_negative_location():
+    return negative_location(obi_df, obi_tweet_df, obi_model)
+
+
+def tinubu_negative_location():
+    return negative_location(tinubu_df, tinubu_tweet_df, tinubu_model)
 
 
 @app.route('/api/v1/single-sentiment/<candidate>')
@@ -597,9 +370,7 @@ def get_single_sentiment(candidate):
 
 
 @app.route('/api/v1/sentiments/<candidate>')
-# class Sentiment(Resource):
 def get_sentiments(candidate):
-    # sensor()
     if candidate == 'atiku':
         return atiku_sentiment()
     elif candidate == 'obi':
@@ -609,8 +380,6 @@ def get_sentiments(candidate):
 
 
 @app.route('/api/v1/hashtags/<candidate>')
-# class Hashtags(Resource):
-
 def get_hashtags(candidate):
     if candidate == 'atiku':
         return get_atiku_hash_tag()
@@ -620,7 +389,7 @@ def get_hashtags(candidate):
         return get_tinubu_hash_tag()
 
 
-@app.route('/api/v1/mentions/<candidate>', methods=['GET', 'POST'])
+@app.route('/api/v1/mentions/<candidate>')
 def get_mentions(candidate):
     if candidate == 'atiku':
         return get_atiku_mention()
@@ -628,9 +397,9 @@ def get_mentions(candidate):
         return get_obi_mention()
     else:
         return get_tinubu_mention()
-    
 
-@app.route('/api/v1/neutral-location/<candidate>', methods=['GET', 'POST'])
+
+@app.route('/api/v1/neutral-location/<candidate>')
 def get_neutral_locations(candidate):
     if candidate == 'atiku':
         return atiku_neutral_location()
@@ -638,9 +407,9 @@ def get_neutral_locations(candidate):
         return obi_neutral_location()
     else:
         return tinubu_neutral_location()
-    
-    
-@app.route('/api/v1/positive-location/<candidate>', methods=['GET', 'POST'])
+
+
+@app.route('/api/v1/positive-location/<candidate>')
 def get_positive_locations(candidate):
     if candidate == 'atiku':
         return atiku_positive_location()
@@ -648,9 +417,9 @@ def get_positive_locations(candidate):
         return obi_positive_location()
     else:
         return tinubu_positive_location()
-    
-    
-@app.route('/api/v1/negative-location/<candidate>', methods=['GET', 'POST'])
+
+
+@app.route('/api/v1/negative-location/<candidate>')
 def get_negative_locations(candidate):
     if candidate == 'atiku':
         return atiku_negative_location()
@@ -658,45 +427,6 @@ def get_negative_locations(candidate):
         return obi_negative_location()
     else:
         return tinubu_negative_location()
-    
-
-@app.route('/predict')
-# class Predict(Resource):
-def get():
-    prediction = []
-    # tweet = request.form['tweet']
-    # df = pd.DataFrame([tweet], columns=['tweet'])
-
-    # df_obi = pd.DataFrame(result_obi, columns=['date', 'user', 'source', 'tweet', 'location', 'like_count', 'retweet_count'])
-    # print(df_obi.head())
-    # print("======================================")
-
-
-    obi_df['tweet'] = obi_df['tweet'].apply(cleanText)
-
-    # final_text = df['tweet']
-    # final_text.iloc[0] = ' '.join(final_text.iloc[0])
-
-
-    vectorizer.fit(obi_df['tweet'].values)
-    final_text = vectorizer.transform(obi_df['tweet'])
-    prediction.append(obi_model.predict(final_text))
-    print("======================================")
-    print("======================================")
-    # print(prediction)
-    obi_df['Analysis'] = prediction
-    # obi_df.apply(lambda col: col.drop_duplicates().reset_index(drop=True))
-    # unique_value = UniqueResults(obi_df)
-    obi = obi_df.set_index(obi_df['username']).drop(["username", "date", "sourceLabel", "location", "likeCount", "retweetCount"], axis=1)
-    positive = random.choice(obi[obi['Analysis'] == 'Positive'])
-    negative = random.choice(obi[obi['Analysis'] == 'Negative'])
-    neutral = random.choice(obi[obi['Analysis'] == 'Neutral'])
-    single = pd.concat([positive, negative, neutral])
-    print("======================================")
-    # return prediction
-    # result = json.dumps(prediction)
-    # return json.dumps(str(prediction))
-    return single.to_json(orient='columns')
 
 
 if __name__ == "__main__":
