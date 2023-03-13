@@ -7,9 +7,14 @@ from sklearn.feature_extraction.text import CountVectorizer
 import datetime
 import snscrape.modules.twitter as sntwitter
 from collections import Counter
+from apscheduler.schedulers.background import BackgroundScheduler
 
 app = flask.Flask(__name__)
 CORS(app)
+
+
+
+
 
 # trained models for each candidate and vectorizer
 atiku_model = pickle.load(open('model/atiku_model_pickle.pkl', 'rb'))
@@ -98,22 +103,27 @@ def sensor():
                         [tweet.date, tweet.user.username, tweet.sourceLabel, tweet.content, tweet.user.location,
                          tweet.likeCount, tweet.retweetCount])
 
-    combined = [result_atiku, result_obi, result_tinubu]
-    return combined
+        
+        print('scheduling')
+
+sched = BackgroundScheduler()
+sched.add_job(sensor, 'cron', minute='0-59/1')
+
+sched.start()
 
 
 # compile extracted data into a list from which we pick individual data for the candidates
-combined_list = sensor().copy()
+sensor()
 
-atiku_df = pd.DataFrame(combined_list[0].copy(),
+atiku_df = pd.DataFrame(result_atiku.copy(),
                         columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
 atiku_tweet_df = atiku_df['tweet']
 
-obi_df = pd.DataFrame(combined_list[1].copy(),
+obi_df = pd.DataFrame(result_obi.copy(),
                       columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
 obi_tweet_df = obi_df['tweet']
 
-tinubu_df = pd.DataFrame(combined_list[2].copy(),
+tinubu_df = pd.DataFrame(result_tinubu.copy(),
                          columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
 tinubu_tweet_df = tinubu_df['tweet']
 
@@ -351,79 +361,73 @@ def tinubu_negative_location():
     return negative_location(tinubu_df, tinubu_tweet_df, tinubu_model)
 
 
-@app.route('/api/v1/scrape')
-def scrapper():
-    sensor()
-    return 'Scrapping successful'
-
-
-@app.route('/api/v1/single_sentiment/<candidate>')
-def get_single_sentiment(candidate):
-    if candidate == 'atiku':
+@app.route('/api/v1/single-sentiment/<candidate>')
+def get_single_sentiment(candidate: str):
+    if candidate.lower() == 'abubakar':
         return atiku_single_tweet_sentiments()
-    elif candidate == 'obi':
+    elif candidate.lower() == 'obi':
         return obi_single_tweet_sentiments()
-    else:
+    elif candidate.lower() == 'tinubu':
         return tinubu_single_tweet_sentiments()
 
 
 @app.route('/api/v1/sentiments/<candidate>')
-def get_sentiments(candidate):
-    if candidate == 'atiku':
+def get_sentiments(candidate: str):
+    if candidate.lower() == 'abubakar':
         return atiku_sentiment()
-    elif candidate == 'obi':
+    elif candidate.lower() == 'obi':
         return obi_sentiment()
-    else:
+    elif candidate.lower() == 'tinubu':
         return tinubu_sentiment()
 
 
 @app.route('/api/v1/hashtags/<candidate>')
-def get_hashtags(candidate):
-    if candidate == 'atiku':
+def get_hashtags(candidate: str):
+    if candidate.lower() == 'abubakar':
         return get_atiku_hash_tag()
-    elif candidate == 'obi':
+    elif candidate.lower() == 'obi':
         return get_obi_hash_tag()
-    else:
+    elif candidate.lower() == 'tinubu':
         return get_tinubu_hash_tag()
 
 
 @app.route('/api/v1/mentions/<candidate>')
-def get_mentions(candidate):
-    if candidate == 'atiku':
+def get_mentions(candidate: str):
+    if candidate.lower() == 'abubakar':
         return get_atiku_mention()
-    elif candidate == 'obi':
+    elif candidate.lower() == 'obi':
         return get_obi_mention()
-    else:
+    elif candidate.lower() == 'tinubu':
         return get_tinubu_mention()
 
 
 @app.route('/api/v1/neutral-location/<candidate>')
-def get_neutral_locations(candidate):
-    if candidate == 'atiku':
+def get_neutral_locations(candidate: str):
+    if candidate.lower() == 'abubakar':
         return atiku_neutral_location()
-    elif candidate == 'obi':
+    elif candidate.lower() == 'obi':
         return obi_neutral_location()
-    else:
+    elif candidate.lower() == 'tinubu':
         return tinubu_neutral_location()
 
 
 @app.route('/api/v1/positive-location/<candidate>')
-def get_positive_locations(candidate):
-    if candidate == 'atiku':
+def get_positive_locations(candidate: str):
+    if candidate.lower() == 'abubakar':
         return atiku_positive_location()
-    elif candidate == 'obi':
+    elif candidate.lower() == 'obi':
         return obi_positive_location()
-    else:
+    elif candidate.lower() == 'tinubu':
         return tinubu_positive_location()
 
 
 @app.route('/api/v1/negative-location/<candidate>')
-def get_negative_locations(candidate):
-    if candidate == 'atiku':
+def get_negative_locations(candidate: str):
+    if candidate.lower() == 'abubakar':
         return atiku_negative_location()
-    elif candidate == 'obi':
+    elif candidate.lower() == 'obi':
         return obi_negative_location()
-    else:
+    elif candidate.lower() == 'tinubu':
         return tinubu_negative_location()
 
 
