@@ -7,7 +7,6 @@ from sklearn.feature_extraction.text import CountVectorizer
 import datetime
 import snscrape.modules.twitter as sntwitter
 from collections import Counter
-from itertools import zip_longest
 
 app = flask.Flask(__name__)
 CORS(app)
