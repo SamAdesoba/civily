@@ -97,6 +97,8 @@ def sensor():
                     result_tinubu.append(
                         [tweet.date, tweet.user.username, tweet.sourceLabel, tweet.content, tweet.user.location,
                          tweet.likeCount, tweet.retweetCount])
+                    
+        if (candidate == '')
 
         # print('scheduling')
 
