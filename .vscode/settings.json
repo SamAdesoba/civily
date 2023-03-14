@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "undefined/subscriptions/0b10d86f-83e3-4f6f-9e3b-4fde2828f33c/resourceGroups/appsvc_linux_centralus_basic/providers/Microsoft.Web/sites/civily-data-001",
+    "appService.deploySubpath": "."
+}

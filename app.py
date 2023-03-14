@@ -17,12 +17,31 @@ CORS(app)
 
 
 # trained models for each candidate and vectorizer
-atiku_model = pickle.load(open('model/atiku_model_pickle.pkl', 'rb'))
+atiku_model = pickle.load(open('model/atiku_model.pkl', 'rb'))
 obi_model = pickle.load(open('model/obi_model_pickle.pkl', 'rb'))
 tinubu_model = pickle.load(open('model/tinubu_model_pickle.pkl', 'rb'))
 
-vectorizer = CountVectorizer(max_features=1000, ngram_range=(1, 2), max_df=500)
+sanwo_model = pickle.load(open('model/gubernitorial_models/sanwo-olu_model.pkl', 'rb'))
+gbadebo_model = pickle.load(open('model/gubernitorial_models/gbadebo_model.pkl', 'rb'))
+jandor_model = pickle.load(open('model/gubernitorial_models/jandor_model.pkl', 'rb'))
+folarin_model = pickle.load(open('model/gubernitorial_models/folarin_model.pkl', 'rb'))
+seyi_model = pickle.load(open('model/gubernitorial_models/seyi_model.pkl', 'rb'))
+tonye_model = pickle.load(open('model/gubernitorial_models/tonye_model.pkl', 'rb'))
+itubo_model = pickle.load(open('model/gubernitorial_models/itubo_model.pkl', 'rb'))
+fubara_model = pickle.load(open('model/gubernitorial_models/fubara_model.pkl', 'rb'))
+sani_model = pickle.load(open('model/gubernitorial_models/sani_model.pkl', 'rb'))
+asake_model = pickle.load(open('model/gubernitorial_models/asake_model.pkl', 'rb'))
+ashiru_model = pickle.load(open('model/gubernitorial_models/ashiru_model.pkl', 'rb'))
+nnaji_model = pickle.load(open('model/gubernitorial_models/nnaji_model.pkl', 'rb'))
+peter_model = pickle.load(open('model/gubernitorial_models/peter_model.pkl', 'rb'))
+nentawe_model = pickle.load(open('model/gubernitorial_models/nentawe_model.pkl', 'rb'))
+dakum_model = pickle.load(open('model/gubernitorial_models/dakum_model.pkl', 'rb'))
+caleb_model = pickle.load(open('model/gubernitorial_models/caleb_model.pkl', 'rb'))
+joel_model = pickle.load(open('model/gubernitorial_models/joel_model.pkl', 'rb'))
+kefas_model = pickle.load(open('model/gubernitorial_models/kefas_model.pkl', 'rb'))
 
+vectorizer = CountVectorizer(max_features=1000, ngram_range=(1, 2), max_df=500)
+atiku_vectorizer = pickle.load(open('model/atiku_vectorizer.pkl', 'rb'))
 
 # function to clean extracted tweets
 def cleanText(text):
@@ -69,8 +88,8 @@ last_date = datetime.timedelta(hours=72)
 
 # function to extract twitter data
 def sensor():
-    for candidate in ['atiku', 'obi', 'tinubu']:
-        if (candidate == 'atiku'):
+    for candidate in ['abubakar', 'obi', 'tinubu']:
+        if (candidate == 'abubakar'):
             result_atiku.clear()
             search_atiku = f'(atikuabubakar OR atikuokowa OR #atikuokowa2023 OR #atikuabubakar OR #atikulated2023) until:{current_date} since:{current_date - last_date}'
             for i, tweet in enumerate(sntwitter.TwitterSearchScraper(search_atiku).get_items()):
@@ -107,7 +126,7 @@ def sensor():
         print('scheduling')
 
 sched = BackgroundScheduler()
-sched.add_job(sensor, 'cron', minute='0-59/1')
+sched.add_job(sensor, 'cron', minute='0-59/10')
 
 sched.start()
 
@@ -291,7 +310,11 @@ def get_tinubu_hash_tag():
 
 # General value_count sentiment functions
 def atiku_sentiment():
-    result = sentiment(atiku_tweet_df, atiku_model)
+    cleaned_data = atiku_tweet_df.apply(cleanText)
+    clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
+    vectorized = atiku_vectorizer.transform(clean_df['tweet'])
+    vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
+    result = atiku_model.predict(vectorized_df.values)
     return sentiment_json_format(result)
 
 
