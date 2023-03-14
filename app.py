@@ -1,47 +1,23 @@
 import flask
 from flask_cors import CORS
-import pickle
 import re
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
-import datetime
-import snscrape.modules.twitter as sntwitter
 from collections import Counter
 from apscheduler.schedulers.background import BackgroundScheduler
+from Gubernitorial.gubernitorial_scrapper import *
 
 app = flask.Flask(__name__)
 CORS(app)
-
-
-
-
 
 # trained models for each candidate and vectorizer
 atiku_model = pickle.load(open('model/atiku_model.pkl', 'rb'))
 obi_model = pickle.load(open('model/obi_model_pickle.pkl', 'rb'))
 tinubu_model = pickle.load(open('model/tinubu_model_pickle.pkl', 'rb'))
 
-sanwo_model = pickle.load(open('model/gubernitorial_models/sanwo-olu_model.pkl', 'rb'))
-gbadebo_model = pickle.load(open('model/gubernitorial_models/gbadebo_model.pkl', 'rb'))
-jandor_model = pickle.load(open('model/gubernitorial_models/jandor_model.pkl', 'rb'))
-folarin_model = pickle.load(open('model/gubernitorial_models/folarin_model.pkl', 'rb'))
-seyi_model = pickle.load(open('model/gubernitorial_models/seyi_model.pkl', 'rb'))
-tonye_model = pickle.load(open('model/gubernitorial_models/tonye_model.pkl', 'rb'))
-itubo_model = pickle.load(open('model/gubernitorial_models/itubo_model.pkl', 'rb'))
-fubara_model = pickle.load(open('model/gubernitorial_models/fubara_model.pkl', 'rb'))
-sani_model = pickle.load(open('model/gubernitorial_models/sani_model.pkl', 'rb'))
-asake_model = pickle.load(open('model/gubernitorial_models/asake_model.pkl', 'rb'))
-ashiru_model = pickle.load(open('model/gubernitorial_models/ashiru_model.pkl', 'rb'))
-nnaji_model = pickle.load(open('model/gubernitorial_models/nnaji_model.pkl', 'rb'))
-peter_model = pickle.load(open('model/gubernitorial_models/peter_model.pkl', 'rb'))
-nentawe_model = pickle.load(open('model/gubernitorial_models/nentawe_model.pkl', 'rb'))
-dakum_model = pickle.load(open('model/gubernitorial_models/dakum_model.pkl', 'rb'))
-caleb_model = pickle.load(open('model/gubernitorial_models/caleb_model.pkl', 'rb'))
-joel_model = pickle.load(open('model/gubernitorial_models/joel_model.pkl', 'rb'))
-kefas_model = pickle.load(open('model/gubernitorial_models/kefas_model.pkl', 'rb'))
-
 vectorizer = CountVectorizer(max_features=1000, ngram_range=(1, 2), max_df=500)
 atiku_vectorizer = pickle.load(open('model/atiku_vectorizer.pkl', 'rb'))
+
 
 # function to clean extracted tweets
 def cleanText(text):
@@ -122,14 +98,13 @@ def sensor():
                         [tweet.date, tweet.user.username, tweet.sourceLabel, tweet.content, tweet.user.location,
                          tweet.likeCount, tweet.retweetCount])
 
-        
-        print('scheduling')
+        # print('scheduling')
 
-sched = BackgroundScheduler()
-sched.add_job(sensor, 'cron', minute='0-59/10')
 
-sched.start()
+# sched = BackgroundScheduler()
+# sched.add_job(sensor, 'cron', minute='0-59/10')
 
+# sched.start()
 
 # compile extracted data into a list from which we pick individual data for the candidates
 sensor()
@@ -145,6 +120,19 @@ obi_tweet_df = obi_df['tweet']
 tinubu_df = pd.DataFrame(result_tinubu.copy(),
                          columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
 tinubu_tweet_df = tinubu_df['tweet']
+
+gbadebo_df = pd.DataFrame(scrape_gbadebo(),
+                          columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
+gbadebo_tweet_df = gbadebo_df['tweet']
+
+jandor_df = pd.DataFrame(scrape_jandor(),
+                         columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
+jandor_tweet_df = jandor_df['tweet']
+
+sanwoolu_df = pd.DataFrame(scrape_sanwoolu(),
+                           columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount',
+                                    'retweetCount'])
+sanwoolu_tweet_df = sanwoolu_df['tweet']
 
 atiku_sentiment_list = []
 
@@ -328,6 +316,21 @@ def tinubu_sentiment():
     return sentiment_json_format(result)
 
 
+def gbadebo_sentiment():
+    result = sentiment(gbadebo_tweet_df, gbadebo_model)
+    return sentiment_json_format(result)
+
+
+def jandor_sentiment():
+    result = sentiment(jandor_tweet_df, jandor_model)
+    return sentiment_json_format(result)
+
+
+def sanwoolu_sentiment():
+    result = sentiment(sanwoolu_tweet_df, sanwo_model)
+    return sentiment_json_format(result)
+
+
 # Single sentiment functions
 def atiku_single_tweet_sentiments():
     result = sentiment(atiku_tweet_df, atiku_model)
@@ -402,6 +405,12 @@ def get_sentiments(candidate: str):
         return obi_sentiment()
     elif candidate.lower() == 'tinubu':
         return tinubu_sentiment()
+    elif candidate.lower() == 'gbadebo':
+        return gbadebo_sentiment()
+    elif candidate.lower() == 'sanwoolu':
+        return sanwoolu_sentiment()
+    elif candidate.lower() == 'jandor':
+        return jandor_sentiment()
 
 
 @app.route('/api/v1/hashtags/<candidate>')
