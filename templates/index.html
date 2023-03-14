@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+    <style>
+    form {
+        margin: auto;
+        width: 35%;
+    }
+    .result {
+        margin: auto;
+        width: 35%;
+        border: 1px solid #ccc;
+    }
+    </style>
+
+    <head>
+        <title>Enter Text</title>
+    </head>
+
+    <form action="{{ url_for('index') }}" method="POST">
+        <fieldset>
+            <legend>Enter Mobile Review:</legend>
+            <textarea name="tweet" rows="10" cols="80" required></textarea>
+            <br>
+            <br>
+            <input type="submit">
+        </fieldset>
+    </form>
+    <br>
+    <div class="result" align="center">
+        {% if result == 0 %}
+            {% for variable, value in original_input.items() %}
+                <b>{{ variable }}</b> : {{ value }}
+            {% endfor %}
+            <br>
+            <br> 
+            <p style="font-size:30px">The Review is:</p>
+            <p style="font-size:40px; color: green;">{{ result }}</p>
+        {% elif result == 1 %}
+            {% for variable, value in original_input.items() %}
+                <b>{{ variable }}</b> : {{ value }}
+            {% endfor %}
+            <br>
+            <br> 
+            <p style="font-size:30px">The Review is:</p>
+            <p style="font-size:40px; color: red;">{{ result }}</p>
+        {% endif %}
+    </div>
+</html>
