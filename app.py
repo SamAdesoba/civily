@@ -98,7 +98,7 @@ def sensor():
                         [tweet.date, tweet.user.username, tweet.sourceLabel, tweet.content, tweet.user.location,
                          tweet.likeCount, tweet.retweetCount])
                     
-        if (candidate == '')
+        # if (candidate == '')
 
         # print('scheduling')
 
@@ -253,6 +253,15 @@ obi_mentions_list = obi_df['mentions'].tolist()
 tinubu_df['mentions'] = tinubu_df['tweet'].apply(mention)
 tinubu_mentions_list = tinubu_df['mentions'].tolist()
 
+gbadebo_df['mentions'] = gbadebo_df['tweet'].apply(mention)
+gbadebo_mentions_list = gbadebo_df['mentions'].tolist()
+
+jandor_df['mentions'] = jandor_df['tweet'].apply(mention)
+jandor_mentions_list = jandor_df['mentions'].tolist()
+
+sanwoolu_df['mentions'] = sanwoolu_df['tweet'].apply(mention)
+sanwoolu_mentions_list = sanwoolu_df['mentions'].tolist()
+
 atiku_df['hashtags'] = atiku_df['tweet'].apply(hashtag)
 atiku_hashtags_list = atiku_df['hashtags'].tolist()
 
@@ -261,6 +270,15 @@ obi_hashtags_list = obi_df['hashtags'].tolist()
 
 tinubu_df['hashtags'] = tinubu_df['tweet'].apply(hashtag)
 tinubu_hashtags_list = tinubu_df['hashtags'].tolist()
+
+gbadebo_df['hashtags'] = gbadebo_df['tweet'].apply(hashtag)
+gbadebo_hashtags_list = gbadebo_df['hashtags'].tolist()
+
+jandor_df['hashtags'] = jandor_df['tweet'].apply(hashtag)
+jandor_hashtags_list = jandor_df['hashtags'].tolist()
+
+sanwoolu_df['hashtags'] = sanwoolu_df['tweet'].apply(hashtag)
+sanwoolu_hashtags_list = sanwoolu_df['hashtags'].tolist()
 
 
 # Mentions functions
@@ -282,6 +300,24 @@ def get_tinubu_mention():
     return tinubu_mentions.set_index(tinubu_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
 
 
+def get_gbadebo_mention():
+    mentions_df = mentions(gbadebo_mentions_list)
+    gbadebo_mentions = mentions_df[mentions_df['Mentions'] == 'GRVlagos']
+    return gbadebo_mentions.set_index(gbadebo_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
+
+
+def get_jandor_mention():
+    mentions_df = mentions(jandor_mentions_list)
+    jandor_mentions = mentions_df[mentions_df['Mentions'] == 'officialjandor']
+    return jandor_mentions.set_index(jandor_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
+
+
+def get_sanwoolu_mention():
+    mentions_df = mentions(sanwoolu_mentions_list)
+    sanwoolu_mentions = mentions_df[mentions_df['Mentions'] == 'officialjandor']
+    return sanwoolu_mentions.set_index(sanwoolu_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
+
+
 # Hashtag functions
 def get_atiku_hash_tag():
     sort = hash_tag(atiku_hashtags_list)
@@ -295,6 +331,21 @@ def get_obi_hash_tag():
 
 def get_tinubu_hash_tag():
     sort = hash_tag(tinubu_hashtags_list)
+    return sort.set_index(sort['Hashtags']).drop("Hashtags", axis=1).to_json(orient='columns')
+
+
+def get_gbadebo_hash_tag():
+    sort = hash_tag(gbadebo_hashtags_list)
+    return sort.set_index(sort['Hashtags']).drop("Hashtags", axis=1).to_json(orient='columns')
+
+
+def get_jandor_hash_tag():
+    sort = hash_tag(jandor_hashtags_list)
+    return sort.set_index(sort['Hashtags']).drop("Hashtags", axis=1).to_json(orient='columns')
+
+
+def get_sanwoolu_hash_tag():
+    sort = hash_tag(sanwoolu_hashtags_list)
     return sort.set_index(sort['Hashtags']).drop("Hashtags", axis=1).to_json(orient='columns')
 
 
@@ -423,6 +474,12 @@ def get_hashtags(candidate: str):
         return get_obi_hash_tag()
     elif candidate.lower() == 'tinubu':
         return get_tinubu_hash_tag()
+    elif candidate.lower() == 'gbadebo':
+        return get_gbadebo_hash_tag()
+    elif candidate.lower() == 'jandor':
+        return get_jandor_hash_tag()
+    elif candidate.lower() == 'sanwoolu':
+        return get_sanwoolu_hash_tag()
 
 
 @app.route('/api/v1/mentions/<candidate>')
@@ -433,6 +490,12 @@ def get_mentions(candidate: str):
         return get_obi_mention()
     elif candidate.lower() == 'tinubu':
         return get_tinubu_mention()
+    elif candidate.lower() == 'gbadebo':
+        return get_gbadebo_mention()
+    elif candidate.lower() == 'jandor':
+        return get_jandor_mention()
+    elif candidate.lower() == 'sanwoolu':
+        return get_sanwoolu_mention()
 
 
 @app.route('/api/v1/neutral-location/<candidate>')
