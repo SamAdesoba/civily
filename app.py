@@ -10,12 +10,12 @@ app = flask.Flask(__name__)
 CORS(app)
 
 # trained models for each candidate and vectorizer
-atiku_model = pickle.load(open('model/atiku_model.pkl', 'rb'))
-obi_model = pickle.load(open('model/obi_model_pickle.pkl', 'rb'))
-tinubu_model = pickle.load(open('model/tinubu_model_pickle.pkl', 'rb'))
+atiku_model = pickle.load(open('model/Presidential/atiku_model.pkl', 'rb'))
+obi_model = pickle.load(open('model/Presidential/obi_model_pickle.pkl', 'rb'))
+tinubu_model = pickle.load(open('model/Presidential/tinubu_model_pickle.pkl', 'rb'))
 
 vectorizer = CountVectorizer(max_features=1000, ngram_range=(1, 2), max_df=500)
-atiku_vectorizer = pickle.load(open('model/atiku_vectorizer.pkl', 'rb'))
+atiku_vectorizer = pickle.load(open('model/Presidential/atiku_vectorizer.pkl', 'rb'))
 
 
 # function to clean extracted tweets

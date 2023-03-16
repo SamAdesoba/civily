@@ -4,7 +4,7 @@ import pickle
 
 gbadebo_model = pickle.load(open('model/gubernitorial_models/gbadebo_model.pkl', 'rb'))
 jandor_model = pickle.load(open('model/gubernitorial_models/jandor_model.pkl', 'rb'))
-sanwoolu_model = pickle.load(open('model/gubernitorial_models/sanwo-olu_model.pkl', 'rb'))
+sanwoolu_model = pickle.load(open('model/gubernitorial_models/sanwoolu_model.pkl', 'rb'))
 tonye_model = pickle.load(open('model/gubernitorial_models/tonye_model.pkl', 'rb'))
 itubo_model = pickle.load(open('model/gubernitorial_models/itubo_model.pkl', 'rb'))
 fubara_model = pickle.load(open('model/gubernitorial_models/fubara_model.pkl', 'rb'))
