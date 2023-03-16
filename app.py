@@ -132,9 +132,68 @@ jandor_df = pd.DataFrame(scrape_jandor(),
 jandor_tweet_df = jandor_df['tweet']
 
 sanwoolu_df = pd.DataFrame(scrape_sanwoolu(),
-                           columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount',
-                                    'retweetCount'])
+                           columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
 sanwoolu_tweet_df = sanwoolu_df['tweet']
+
+tonye_df = pd.DataFrame(scrape_tonye(),
+                           columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
+tonye_tweet_df = tonye_df['tweet']
+
+itubo_df = pd.DataFrame(scrape_itubo(),
+                           columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
+itubo_tweet_df = itubo_df['tweet']
+
+fubara_df = pd.DataFrame(scrape_fubara(),
+                           columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
+fubara_tweet_df = fubara_df['tweet']
+
+folarin_df = pd.DataFrame(scrape_folarin(),
+                           columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
+folarin_tweet_df = folarin_df['tweet']
+
+seyi_df = pd.DataFrame(scrape_seyi(),
+                           columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
+seyi_tweet_df = seyi_df['tweet']
+
+sani_df = pd.DataFrame(scrape_sani(),
+                           columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
+sani_tweet_df = sani_df['tweet']
+
+asake_df = pd.DataFrame(scrape_asake(),
+                           columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
+asake_tweet_df = asake_df['tweet']
+
+ashiru_df = pd.DataFrame(scrape_ashiru(),
+                           columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
+ashiru_tweet_df = ashiru_df['tweet']
+
+nentawe_df = pd.DataFrame(scrape_nentawe(),
+                           columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
+nentawe_tweet_df = nentawe_df['tweet']
+
+dakum_df = pd.DataFrame(scrape_dakum(),
+                           columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
+dakum_tweet_df = dakum_df['tweet']
+
+caleb_df = pd.DataFrame(scrape_caleb(),
+                           columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
+caleb_tweet_df = caleb_df['tweet']
+
+nnaji_df = pd.DataFrame(scrape_nnaji(),
+                           columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
+nnaji_tweet_df = nnaji_df['tweet']
+
+peter_df = pd.DataFrame(scrape_peter(),
+                           columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
+peter_tweet_df = peter_df['tweet']
+
+joel_df = pd.DataFrame(scrape_joel(),
+                           columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
+joel_tweet_df = joel_df['tweet']
+
+kefas_df = pd.DataFrame(scrape_kefas(),
+                           columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
+kefas_tweet_df = kefas_df['tweet']
 
 atiku_sentiment_list = []
 
@@ -262,6 +321,51 @@ jandor_mentions_list = jandor_df['mentions'].tolist()
 sanwoolu_df['mentions'] = sanwoolu_df['tweet'].apply(mention)
 sanwoolu_mentions_list = sanwoolu_df['mentions'].tolist()
 
+tonye_df['mentions'] = tonye_df['tweet'].apply(mention)
+tonye_mentions_list = tonye_df['mentions'].tolist()
+
+itubo_df['mentions'] = itubo_df['tweet'].apply(mention)
+itubo_mentions_list = itubo_df['mentions'].tolist()
+
+fubara_df['mentions'] = fubara_df['tweet'].apply(mention)
+fubara_mentions_list = fubara_df['mentions'].tolist()
+
+folarin_df['mentions'] = folarin_df['tweet'].apply(mention)
+folarin_mentions_list = folarin_df['mentions'].tolist()
+
+seyi_df['mentions'] = seyi_df['tweet'].apply(mention)
+seyi_mentions_list = seyi_df['mentions'].tolist()
+
+sani_df['mentions'] = sani_df['tweet'].apply(mention)
+sani_mentions_list = sani_df['mentions'].tolist()
+
+asake_df['mentions'] = asake_df['tweet'].apply(mention)
+asake_mentions_list = asake_df['mentions'].tolist()
+
+ashiru_df['mentions'] = ashiru_df['tweet'].apply(mention)
+ashiru_mentions_list = ashiru_df['mentions'].tolist()
+
+nentawe_df['mentions'] = nentawe_df['tweet'].apply(mention)
+nentawe_mentions_list = nentawe_df['mentions'].tolist()
+
+dakum_df['mentions'] = dakum_df['tweet'].apply(mention)
+dakum_mentions_list = dakum_df['mentions'].tolist()
+
+caleb_df['mentions'] = caleb_df['tweet'].apply(mention)
+caleb_mentions_list = caleb_df['mentions'].tolist()
+
+nnaji_df['mentions'] = nnaji_df['tweet'].apply(mention)
+nnaji_mentions_list = nnaji_df['mentions'].tolist()
+
+peter_df['mentions'] = peter_df['tweet'].apply(mention)
+peter_mentions_list = peter_df['mentions'].tolist()
+
+joel_df['mentions'] = joel_df['tweet'].apply(mention)
+joel_mentions_list = joel_df['mentions'].tolist()
+
+kefas_df['mentions'] = kefas_df['tweet'].apply(mention)
+kefas_mentions_list = kefas_df['mentions'].tolist()
+
 atiku_df['hashtags'] = atiku_df['tweet'].apply(hashtag)
 atiku_hashtags_list = atiku_df['hashtags'].tolist()
 
@@ -279,6 +383,51 @@ jandor_hashtags_list = jandor_df['hashtags'].tolist()
 
 sanwoolu_df['hashtags'] = sanwoolu_df['tweet'].apply(hashtag)
 sanwoolu_hashtags_list = sanwoolu_df['hashtags'].tolist()
+
+tonye_df['hashtags'] = tonye_df['tweet'].apply(hashtag)
+tonye_hashtags_list = tonye_df['hashtags'].tolist()
+
+itubo_df['hashtags'] = itubo_df['tweet'].apply(hashtag)
+itubo_hashtags_list = itubo_df['hashtags'].tolist()
+
+fubara_df['hashtags'] = fubara_df['tweet'].apply(hashtag)
+fubara_hashtags_list = fubara_df['hashtags'].tolist()
+
+folarin_df['hashtags'] = folarin_df['tweet'].apply(hashtag)
+folarin_hashtags_list = folarin_df['hashtags'].tolist()
+
+seyi_df['hashtags'] = seyi_df['tweet'].apply(hashtag)
+seyi_hashtags_list = seyi_df['hashtags'].tolist()
+
+sani_df['hashtags'] = sani_df['tweet'].apply(hashtag)
+sani_hashtags_list = sani_df['hashtags'].tolist()
+
+asake_df['hashtags'] = asake_df['tweet'].apply(hashtag)
+asake_hashtags_list = asake_df['hashtags'].tolist()
+
+ashiru_df['hashtags'] = ashiru_df['tweet'].apply(hashtag)
+ashiru_hashtags_list = ashiru_df['hashtags'].tolist()
+
+nentawe_df['hashtags'] = nentawe_df['tweet'].apply(hashtag)
+nentawe_hashtags_list = nentawe_df['hashtags'].tolist()
+
+dakum_df['hashtags'] = dakum_df['tweet'].apply(hashtag)
+dakum_hashtags_list = dakum_df['hashtags'].tolist()
+
+caleb_df['hashtags'] = caleb_df['tweet'].apply(hashtag)
+caleb_hashtags_list = caleb_df['hashtags'].tolist()
+
+nnaji_df['hashtags'] = nnaji_df['tweet'].apply(hashtag)
+nnaji_hashtags_list = nnaji_df['hashtags'].tolist()
+
+peter_df['hashtags'] = peter_df['tweet'].apply(hashtag)
+peter_hashtags_list = peter_df['hashtags'].tolist()
+
+joel_df['hashtags'] = joel_df['tweet'].apply(hashtag)
+joel_hashtags_list = joel_df['hashtags'].tolist()
+
+kefas_df['hashtags'] = kefas_df['tweet'].apply(hashtag)
+kefas_hashtags_list = kefas_df['hashtags'].tolist()
 
 
 # Mentions functions
@@ -314,8 +463,98 @@ def get_jandor_mention():
 
 def get_sanwoolu_mention():
     mentions_df = mentions(sanwoolu_mentions_list)
-    sanwoolu_mentions = mentions_df[mentions_df['Mentions'] == 'officialjandor']
+    sanwoolu_mentions = mentions_df[mentions_df['Mentions'] == 'jidesanwoolu']
     return sanwoolu_mentions.set_index(sanwoolu_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
+
+
+def get_tonye_mention():
+    mentions_df = mentions(tonye_mentions_list)
+    tonye_mentions = mentions_df[mentions_df['Mentions'] == 'TonyeCole1']
+    return tonye_mentions.set_index(tonye_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
+
+
+def get_itubo_mention():
+    mentions_df = mentions(itubo_mentions_list)
+    itubo_mentions = mentions_df[mentions_df['Mentions'] == 'GovCan_Beatrice']
+    return itubo_mentions.set_index(itubo_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
+
+
+def get_fubara_mention():
+    mentions_df = mentions(fubara_mentions_list)
+    fubara_mentions = mentions_df[mentions_df['Mentions'] == 'SimFubaraKSC']
+    return fubara_mentions.set_index(fubara_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
+
+
+def get_folarin_mention():
+    mentions_df = mentions(folarin_mentions_list)
+    folarin_mentions = mentions_df[mentions_df['Mentions'] == 'teslimkfolarin']
+    return folarin_mentions.set_index(folarin_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
+
+
+def get_seyi_mention():
+    mentions_df = mentions(seyi_mentions_list)
+    seyi_mentions = mentions_df[mentions_df['Mentions'] == 'seyiamakinde']
+    return seyi_mentions.set_index(seyi_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
+
+
+def get_sani_mention():
+    mentions_df = mentions(sani_mentions_list)
+    sani_mentions = mentions_df[mentions_df['Mentions'] == 'ubasanius']
+    return sani_mentions.set_index(sani_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
+
+
+def get_asake_mention():
+    mentions_df = mentions(asake_mentions_list)
+    asake_mentions = mentions_df[mentions_df['Mentions'] == 'joe_asake']
+    return asake_mentions.set_index(asake_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
+
+
+def get_ashiru_mention():
+    mentions_df = mentions(ashiru_mentions_list)
+    ashiru_mentions = mentions_df[mentions_df['Mentions'] == 'IsaAshiruKudan']
+    return ashiru_mentions.set_index(ashiru_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
+
+
+def get_nentawe_mention():
+    mentions_df = mentions(nentawe_mentions_list)
+    nentawe_mentions = mentions_df[mentions_df['Mentions'] == 'nentawe1']
+    return nentawe_mentions.set_index(nentawe_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
+
+
+def get_dakum_mention():
+    mentions_df = mentions(dakum_mentions_list)
+    dakum_mentions = mentions_df[mentions_df['Mentions'] == 'PatrickDakum']
+    return dakum_mentions.set_index(dakum_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
+
+
+def get_caleb_mention():
+    mentions_df = mentions(caleb_mentions_list)
+    caleb_mentions = mentions_df[mentions_df['Mentions'] == 'CalebMutfwang']
+    return caleb_mentions.set_index(caleb_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
+
+
+def get_nnaji_mention():
+    mentions_df = mentions(nnaji_mentions_list)
+    nnaji_mentions = mentions_df[mentions_df['Mentions'] == 'Nwakaibie4Gov']
+    return nnaji_mentions.set_index(nnaji_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
+
+
+def get_peter_mention():
+    mentions_df = mentions(peter_mentions_list)
+    peter_mentions = mentions_df[mentions_df['Mentions'] == 'PNMbah']
+    return peter_mentions.set_index(peter_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
+
+
+def get_joel_mention():
+    mentions_df = mentions(joel_mentions_list)
+    joel_mentions = mentions_df[mentions_df['Mentions'] == 'SenIkenya']
+    return joel_mentions.set_index(joel_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
+
+
+def get_kefas_mention():
+    mentions_df = mentions(kefas_mentions_list)
+    kefas_mentions = mentions_df[mentions_df['Mentions'] == 'hon_kefas']
+    return kefas_mentions.set_index(kefas_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
 
 
 # Hashtag functions
@@ -346,6 +585,81 @@ def get_jandor_hash_tag():
 
 def get_sanwoolu_hash_tag():
     sort = hash_tag(sanwoolu_hashtags_list)
+    return sort.set_index(sort['Hashtags']).drop("Hashtags", axis=1).to_json(orient='columns')
+
+
+def get_tonye_hash_tag():
+    sort = hash_tag(tonye_hashtags_list)
+    return sort.set_index(sort['Hashtags']).drop("Hashtags", axis=1).to_json(orient='columns')
+
+
+def get_itubo_hash_tag():
+    sort = hash_tag(itubo_hashtags_list)
+    return sort.set_index(sort['Hashtags']).drop("Hashtags", axis=1).to_json(orient='columns')
+
+
+def get_fubara_hash_tag():
+    sort = hash_tag(fubara_hashtags_list)
+    return sort.set_index(sort['Hashtags']).drop("Hashtags", axis=1).to_json(orient='columns')
+
+
+def get_folarin_hash_tag():
+    sort = hash_tag(folarin_hashtags_list)
+    return sort.set_index(sort['Hashtags']).drop("Hashtags", axis=1).to_json(orient='columns')
+
+
+def get_seyi_hash_tag():
+    sort = hash_tag(seyi_hashtags_list)
+    return sort.set_index(sort['Hashtags']).drop("Hashtags", axis=1).to_json(orient='columns')
+
+
+def get_sani_hash_tag():
+    sort = hash_tag(sani_hashtags_list)
+    return sort.set_index(sort['Hashtags']).drop("Hashtags", axis=1).to_json(orient='columns')
+
+
+def get_asake_hash_tag():
+    sort = hash_tag(asake_hashtags_list)
+    return sort.set_index(sort['Hashtags']).drop("Hashtags", axis=1).to_json(orient='columns')
+
+
+def get_ashiru_hash_tag():
+    sort = hash_tag(ashiru_hashtags_list)
+    return sort.set_index(sort['Hashtags']).drop("Hashtags", axis=1).to_json(orient='columns')
+
+
+def get_nentawe_hash_tag():
+    sort = hash_tag(nentawe_hashtags_list)
+    return sort.set_index(sort['Hashtags']).drop("Hashtags", axis=1).to_json(orient='columns')
+
+
+def get_dakum_hash_tag():
+    sort = hash_tag(dakum_hashtags_list)
+    return sort.set_index(sort['Hashtags']).drop("Hashtags", axis=1).to_json(orient='columns')
+
+
+def get_caleb_hash_tag():
+    sort = hash_tag(caleb_hashtags_list)
+    return sort.set_index(sort['Hashtags']).drop("Hashtags", axis=1).to_json(orient='columns')
+
+
+def get_nnaji_hash_tag():
+    sort = hash_tag(nnaji_hashtags_list)
+    return sort.set_index(sort['Hashtags']).drop("Hashtags", axis=1).to_json(orient='columns')
+
+
+def get_peter_hash_tag():
+    sort = hash_tag(peter_hashtags_list)
+    return sort.set_index(sort['Hashtags']).drop("Hashtags", axis=1).to_json(orient='columns')
+
+
+def get_joel_hash_tag():
+    sort = hash_tag(joel_hashtags_list)
+    return sort.set_index(sort['Hashtags']).drop("Hashtags", axis=1).to_json(orient='columns')
+
+
+def get_kefas_hash_tag():
+    sort = hash_tag(kefas_hashtags_list)
     return sort.set_index(sort['Hashtags']).drop("Hashtags", axis=1).to_json(orient='columns')
 
 
@@ -416,6 +730,78 @@ def tinubu_neutral_location():
     return neutral_location(tinubu_df, tinubu_tweet_df, tinubu_model)
 
 
+def gbadebo_neutral_location():
+    return neutral_location(gbadebo_df, gbadebo_tweet_df, gbadebo_model)
+
+
+def jandor_neutral_location():
+    return neutral_location(jandor_df, jandor_tweet_df, jandor_model)
+
+
+def sanwoolu_neutral_location():
+    return neutral_location(sanwoolu_df, sanwoolu_tweet_df, sanwoolu_model)
+
+
+def tonye_neutral_location():
+    return neutral_location(tonye_df, tonye_tweet_df, tonye_model)
+
+
+def itubo_neutral_location():
+    return neutral_location(itubo_df, itubo_tweet_df, itubo_model)
+
+
+def fubara_neutral_location():
+    return neutral_location(fubara_df, fubara_tweet_df, fubara_model)
+
+
+def folarin_neutral_location():
+    return neutral_location(folarin_df, folarin_tweet_df, folarin_model)
+
+
+def seyi_neutral_location():
+    return neutral_location(seyi_df, seyi_tweet_df, seyi_model)
+
+
+def sani_neutral_location():
+    return neutral_location(sani_df, sani_tweet_df, sani_model)
+
+
+def asake_neutral_location():
+    return neutral_location(asake_df, asake_tweet_df, asake_model)
+
+
+def ashiru_neutral_location():
+    return neutral_location(ashiru_df, ashiru_tweet_df, ashiru_model)
+
+
+def nentawe_neutral_location():
+    return neutral_location(nentawe_df, nentawe_tweet_df, nentawe_model)
+
+
+def dakum_neutral_location():
+    return neutral_location(dakum_df, dakum_tweet_df, dakum_model)
+
+
+def caleb_neutral_location():
+    return neutral_location(caleb_df, caleb_tweet_df, caleb_model)
+
+
+def nnaji_neutral_location():
+    return neutral_location(nnaji_df, nnaji_tweet_df, nnaji_model)
+
+
+def peter_neutral_location():
+    return neutral_location(peter_df, peter_tweet_df, peter_model)
+
+
+def joel_neutral_location():
+    return neutral_location(joel_df, joel_tweet_df, joel_model)
+
+
+def kefas_neutral_location():
+    return neutral_location(kefas_df, kefas_tweet_df, kefas_model)
+
+
 def atiku_positive_location():
     return positive_location(atiku_df, atiku_tweet_df, atiku_model)
 
@@ -480,6 +866,36 @@ def get_hashtags(candidate: str):
         return get_jandor_hash_tag()
     elif candidate.lower() == 'sanwoolu':
         return get_sanwoolu_hash_tag()
+    elif candidate.lower() == 'tonye':
+        return get_tonye_hash_tag()
+    elif candidate.lower() == 'itubo':
+        return get_itubo_hash_tag()
+    elif candidate.lower() == 'fubara':
+        return get_fubara_hash_tag()
+    elif candidate.lower() == 'folarin':
+        return get_folarin_hash_tag()
+    elif candidate.lower() == 'seyi':
+        return get_seyi_hash_tag()
+    elif candidate.lower() == 'sani':
+        return get_sani_hash_tag()
+    elif candidate.lower() == 'asake':
+        return get_asake_hash_tag()
+    elif candidate.lower() == 'ashiru':
+        return get_ashiru_hash_tag()
+    elif candidate.lower() == 'nentawe':
+        return get_nentawe_hash_tag()
+    elif candidate.lower() == 'dakum':
+        return get_dakum_hash_tag()
+    elif candidate.lower() == 'caleb':
+        return get_caleb_hash_tag()
+    elif candidate.lower() == 'nnaji':
+        return get_nnaji_hash_tag()
+    elif candidate.lower() == 'peter':
+        return get_peter_hash_tag()
+    elif candidate.lower() == 'joel':
+        return get_joel_hash_tag()
+    elif candidate.lower() == 'kefas':
+        return get_kefas_hash_tag()
 
 
 @app.route('/api/v1/mentions/<candidate>')
@@ -496,6 +912,36 @@ def get_mentions(candidate: str):
         return get_jandor_mention()
     elif candidate.lower() == 'sanwoolu':
         return get_sanwoolu_mention()
+    elif candidate.lower() == 'tonye':
+        return get_tonye_mention()
+    elif candidate.lower() == 'itubo':
+        return get_itubo_mention()
+    elif candidate.lower() == 'fubara':
+        return get_fubara_mention()
+    elif candidate.lower() == 'folarin':
+        return get_folarin_mention()
+    elif candidate.lower() == 'seyi':
+        return get_seyi_mention()
+    elif candidate.lower() == 'sani':
+        return get_sani_mention()
+    elif candidate.lower() == 'asake':
+        return get_asake_mention()
+    elif candidate.lower() == 'ashiru':
+        return get_ashiru_mention()
+    elif candidate.lower() == 'nentawe':
+        return get_nentawe_mention()
+    elif candidate.lower() == 'dakum':
+        return get_dakum_mention()
+    elif candidate.lower() == 'caleb':
+        return get_caleb_mention()
+    elif candidate.lower() == 'nnaji':
+        return get_nnaji_mention()
+    elif candidate.lower() == 'peter':
+        return get_peter_mention()
+    elif candidate.lower() == 'joel':
+        return get_joel_mention()
+    elif candidate.lower() == 'kefas':
+        return get_kefas_mention()
 
 
 @app.route('/api/v1/neutral-location/<candidate>')
@@ -506,6 +952,42 @@ def get_neutral_locations(candidate: str):
         return obi_neutral_location()
     elif candidate.lower() == 'tinubu':
         return tinubu_neutral_location()
+    elif candidate.lower() == 'gbadebo':
+        return gbadebo_neutral_location()
+    elif candidate.lower() == 'jandor':
+        return jandor_neutral_location()
+    elif candidate.lower() == 'sanwoolu':
+        return sanwoolu_neutral_location()
+    elif candidate.lower() == 'tonye':
+        return tonye_neutral_location()
+    elif candidate.lower() == 'itubo':
+        return itubo_neutral_location()
+    elif candidate.lower() == 'fubara':
+        return fubara_neutral_location()
+    elif candidate.lower() == 'folarin':
+        return folarin_neutral_location()
+    elif candidate.lower() == 'seyi':
+        return seyi_neutral_location()
+    elif candidate.lower() == 'sani':
+        return sani_neutral_location()
+    elif candidate.lower() == 'asake':
+        return asake_neutral_location()
+    elif candidate.lower() == 'ashiru':
+        return ashiru_neutral_location()
+    elif candidate.lower() == 'nentawe':
+        return nentawe_neutral_location()
+    elif candidate.lower() == 'dakum':
+        return dakum_neutral_location()
+    elif candidate.lower() == 'caleb':
+        return caleb_neutral_location()
+    elif candidate.lower() == 'nnaji':
+        return nnaji_neutral_location()
+    elif candidate.lower() == 'peter':
+        return peter_neutral_location()
+    elif candidate.lower() == 'joel':
+        return joel_neutral_location()
+    elif candidate.lower() == 'kefas':
+        return kefas_neutral_location()
 
 
 @app.route('/api/v1/positive-location/<candidate>')

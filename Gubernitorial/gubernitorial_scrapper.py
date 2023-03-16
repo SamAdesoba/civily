@@ -2,22 +2,22 @@ import datetime
 import snscrape.modules.twitter as sntwitter
 import pickle
 
-sanwo_model = pickle.load(open('model/gubernitorial_models/sanwo-olu_model.pkl', 'rb'))
 gbadebo_model = pickle.load(open('model/gubernitorial_models/gbadebo_model.pkl', 'rb'))
 jandor_model = pickle.load(open('model/gubernitorial_models/jandor_model.pkl', 'rb'))
-folarin_model = pickle.load(open('model/gubernitorial_models/folarin_model.pkl', 'rb'))
-seyi_model = pickle.load(open('model/gubernitorial_models/seyi_model.pkl', 'rb'))
+sanwoolu_model = pickle.load(open('model/gubernitorial_models/sanwo-olu_model.pkl', 'rb'))
 tonye_model = pickle.load(open('model/gubernitorial_models/tonye_model.pkl', 'rb'))
 itubo_model = pickle.load(open('model/gubernitorial_models/itubo_model.pkl', 'rb'))
 fubara_model = pickle.load(open('model/gubernitorial_models/fubara_model.pkl', 'rb'))
+folarin_model = pickle.load(open('model/gubernitorial_models/folarin_model.pkl', 'rb'))
+seyi_model = pickle.load(open('model/gubernitorial_models/seyi_model.pkl', 'rb'))
 sani_model = pickle.load(open('model/gubernitorial_models/sani_model.pkl', 'rb'))
 asake_model = pickle.load(open('model/gubernitorial_models/asake_model.pkl', 'rb'))
 ashiru_model = pickle.load(open('model/gubernitorial_models/ashiru_model.pkl', 'rb'))
-nnaji_model = pickle.load(open('model/gubernitorial_models/nnaji_model.pkl', 'rb'))
-peter_model = pickle.load(open('model/gubernitorial_models/peter_model.pkl', 'rb'))
 nentawe_model = pickle.load(open('model/gubernitorial_models/nentawe_model.pkl', 'rb'))
 dakum_model = pickle.load(open('model/gubernitorial_models/dakum_model.pkl', 'rb'))
 caleb_model = pickle.load(open('model/gubernitorial_models/caleb_model.pkl', 'rb'))
+nnaji_model = pickle.load(open('model/gubernitorial_models/nnaji_model.pkl', 'rb'))
+peter_model = pickle.load(open('model/gubernitorial_models/peter_model.pkl', 'rb'))
 joel_model = pickle.load(open('model/gubernitorial_models/joel_model.pkl', 'rb'))
 kefas_model = pickle.load(open('model/gubernitorial_models/kefas_model.pkl', 'rb'))
 
