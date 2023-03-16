@@ -4,7 +4,6 @@ import re
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 from collections import Counter
-from apscheduler.schedulers.background import BackgroundScheduler
 from Gubernitorial.gubernitorial_scrapper import *
 
 app = flask.Flask(__name__)
@@ -187,15 +186,6 @@ peter_df = pd.DataFrame(scrape_peter(),
                            columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
 peter_tweet_df = peter_df['tweet']
 
-joel_df = pd.DataFrame(scrape_joel(),
-                           columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
-joel_tweet_df = joel_df['tweet']
-
-kefas_df = pd.DataFrame(scrape_kefas(),
-                           columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
-
-kefas_tweet_df = kefas_df['tweet']
-
 atiku_sentiment_list = []
 
 obi_sentiment_list = []
@@ -361,12 +351,6 @@ nnaji_mentions_list = nnaji_df['mentions'].tolist()
 peter_df['mentions'] = peter_df['tweet'].apply(mention)
 peter_mentions_list = peter_df['mentions'].tolist()
 
-joel_df['mentions'] = joel_df['tweet'].apply(mention)
-joel_mentions_list = joel_df['mentions'].tolist()
-
-kefas_df['mentions'] = kefas_df['tweet'].apply(mention)
-kefas_mentions_list = kefas_df['mentions'].tolist()
-
 atiku_df['hashtags'] = atiku_df['tweet'].apply(hashtag)
 atiku_hashtags_list = atiku_df['hashtags'].tolist()
 
@@ -423,12 +407,6 @@ nnaji_hashtags_list = nnaji_df['hashtags'].tolist()
 
 peter_df['hashtags'] = peter_df['tweet'].apply(hashtag)
 peter_hashtags_list = peter_df['hashtags'].tolist()
-
-joel_df['hashtags'] = joel_df['tweet'].apply(hashtag)
-joel_hashtags_list = joel_df['hashtags'].tolist()
-
-kefas_df['hashtags'] = kefas_df['tweet'].apply(hashtag)
-kefas_hashtags_list = kefas_df['hashtags'].tolist()
 
 
 # Mentions functions
@@ -546,18 +524,6 @@ def get_peter_mention():
     return peter_mentions.set_index(peter_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
 
 
-def get_joel_mention():
-    mentions_df = mentions(joel_mentions_list)
-    joel_mentions = mentions_df[mentions_df['Mentions'] == 'SenIkenya']
-    return joel_mentions.set_index(joel_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
-
-
-def get_kefas_mention():
-    mentions_df = mentions(kefas_mentions_list)
-    kefas_mentions = mentions_df[mentions_df['Mentions'] == 'hon_kefas']
-    return kefas_mentions.set_index(kefas_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
-
-
 # Hashtag functions
 def get_atiku_hash_tag():
     sort = hash_tag(atiku_hashtags_list)
@@ -654,16 +620,6 @@ def get_peter_hash_tag():
     return sort.set_index(sort['Hashtags']).drop("Hashtags", axis=1).to_json(orient='columns')
 
 
-def get_joel_hash_tag():
-    sort = hash_tag(joel_hashtags_list)
-    return sort.set_index(sort['Hashtags']).drop("Hashtags", axis=1).to_json(orient='columns')
-
-
-def get_kefas_hash_tag():
-    sort = hash_tag(kefas_hashtags_list)
-    return sort.set_index(sort['Hashtags']).drop("Hashtags", axis=1).to_json(orient='columns')
-
-
 # General value_count sentiment functions
 def atiku_sentiment():
     cleaned_data = atiku_tweet_df.apply(cleanText)
@@ -695,7 +651,7 @@ def jandor_sentiment():
 
 
 def sanwoolu_sentiment():
-    result = sentiment(sanwoolu_tweet_df, sanwo_model)
+    result = sentiment(sanwoolu_tweet_df, sanwoolu_model)
     return sentiment_json_format(result)
 
 
@@ -764,16 +720,6 @@ def peter_sentiment():
     return sentiment_json_format(result)
 
 
-def joel_sentiment():
-    result = sentiment(joel_tweet_df, joel_model)
-    return sentiment_json_format(result)
-
-
-def kefas_sentiment():
-    result = sentiment(kefas_tweet_df, kefas_model)
-    return sentiment_json_format(result)
-
-
 # Single sentiment functions
 def atiku_single_tweet_sentiments():
     result = sentiment(atiku_tweet_df, atiku_model)
@@ -806,7 +752,7 @@ def jandor_single_tweet_sentiments():
 
 
 def sanwoolu_single_tweet_sentiments():
-    result = sentiment(sanwoolu_tweet_df, sanwo_model)
+    result = sentiment(sanwoolu_tweet_df, sanwoolu_model)
     filtered_result = get_random_sentiment(tinubu_df, result)
     return filtered_result.to_dict(orient='records')
 
@@ -889,18 +835,6 @@ def peter_single_tweet_sentiments():
     return filtered_result.to_dict(orient='records')
 
 
-def joel_single_tweet_sentiments():
-    result = sentiment(joel_tweet_df, joel_model)
-    filtered_result = get_random_sentiment(joel_df, result)
-    return filtered_result.to_dict(orient='records')
-
-
-def kefas_single_tweet_sentiments():
-    result = sentiment(kefas_tweet_df, kefas_model)
-    filtered_result = get_random_sentiment(kefas_df, result)
-    return filtered_result.to_dict(orient='records')
-
-
 # Location functions
 def atiku_neutral_location():
     return neutral_location(atiku_df, atiku_tweet_df, atiku_model)
@@ -978,14 +912,6 @@ def peter_neutral_location():
     return neutral_location(peter_df, peter_tweet_df, peter_model)
 
 
-def joel_neutral_location():
-    return neutral_location(joel_df, joel_tweet_df, joel_model)
-
-
-def kefas_neutral_location():
-    return neutral_location(kefas_df, kefas_tweet_df, kefas_model)
-
-
 def atiku_positive_location():
     return positive_location(atiku_df, atiku_tweet_df, atiku_model)
 
@@ -996,6 +922,70 @@ def obi_positive_location():
 
 def tinubu_positive_location():
     return positive_location(tinubu_df, tinubu_tweet_df, tinubu_model)
+
+
+def gbadebo_positive_location():
+    return positive_location(gbadebo_df, gbadebo_tweet_df, gbadebo_model)
+
+
+def jandor_positive_location():
+    return positive_location(jandor_df, jandor_tweet_df, jandor_model)
+
+
+def sanwoolu_positive_location():
+    return positive_location(sanwoolu_df, sanwoolu_tweet_df, sanwoolu_model)
+
+
+def tonye_positive_location():
+    return positive_location(tonye_df, tonye_tweet_df, tonye_model)
+
+
+def itubo_positive_location():
+    return positive_location(itubo_df, itubo_tweet_df, itubo_model)
+
+
+def fubara_positive_location():
+    return positive_location(fubara_df, fubara_tweet_df, fubara_model)
+
+
+def folarin_positive_location():
+    return positive_location(folarin_df, folarin_tweet_df, folarin_model)
+
+
+def seyi_positive_location():
+    return positive_location(seyi_df, seyi_tweet_df, seyi_model)
+
+
+def sani_positive_location():
+    return positive_location(sani_df, sani_tweet_df, sani_model)
+
+
+def asake_positive_location():
+    return positive_location(asake_df, asake_tweet_df, asake_model)
+
+
+def ashiru_positive_location():
+    return positive_location(ashiru_df, ashiru_tweet_df, ashiru_model)
+
+
+def nentawe_positive_location():
+    return positive_location(nentawe_df, nentawe_tweet_df, nentawe_model)
+
+
+def dakum_positive_location():
+    return positive_location(dakum_df, dakum_tweet_df, dakum_model)
+
+
+def caleb_positive_location():
+    return positive_location(caleb_df, caleb_tweet_df, caleb_model)
+
+
+def nnaji_positive_location():
+    return positive_location(nnaji_df, nnaji_tweet_df, nnaji_model)
+
+
+def peter_positive_location():
+    return positive_location(peter_df, peter_tweet_df, peter_model)
 
 
 def atiku_negative_location():
@@ -1122,10 +1112,6 @@ def get_single_sentiment(candidate: str):
         return nnaji_single_tweet_sentiments()
     elif candidate.lower() == 'peter':
         return peter_single_tweet_sentiments()
-    elif candidate.lower() == 'joel':
-        return joel_single_tweet_sentiments()
-    elif candidate.lower() == 'kefas':
-        return kefas_single_tweet_sentiments()
 
 
 @app.route('/api/v1/sentiments/<candidate>')
@@ -1168,10 +1154,6 @@ def get_sentiments(candidate: str):
         return nnaji_sentiment()
     elif candidate.lower() == 'peter':
         return peter_sentiment()
-    elif candidate.lower() == 'joel':
-        return joel_sentiment()
-    elif candidate.lower() == 'kefas':
-        return kefas_sentiment()
 
 
 @app.route('/api/v1/hashtags/<candidate>')
@@ -1214,10 +1196,6 @@ def get_hashtags(candidate: str):
         return get_nnaji_hash_tag()
     elif candidate.lower() == 'peter':
         return get_peter_hash_tag()
-    elif candidate.lower() == 'joel':
-        return get_joel_hash_tag()
-    elif candidate.lower() == 'kefas':
-        return get_kefas_hash_tag()
 
 
 @app.route('/api/v1/mentions/<candidate>')
@@ -1260,10 +1238,6 @@ def get_mentions(candidate: str):
         return get_nnaji_mention()
     elif candidate.lower() == 'peter':
         return get_peter_mention()
-    elif candidate.lower() == 'joel':
-        return get_joel_mention()
-    elif candidate.lower() == 'kefas':
-        return get_kefas_mention()
 
 
 @app.route('/api/v1/neutral-location/<candidate>')
@@ -1306,10 +1280,6 @@ def get_neutral_locations(candidate: str):
         return nnaji_neutral_location()
     elif candidate.lower() == 'peter':
         return peter_neutral_location()
-    elif candidate.lower() == 'joel':
-        return joel_neutral_location()
-    elif candidate.lower() == 'kefas':
-        return kefas_neutral_location()
 
 
 @app.route('/api/v1/positive-location/<candidate>')
@@ -1320,6 +1290,38 @@ def get_positive_locations(candidate: str):
         return obi_positive_location()
     elif candidate.lower() == 'tinubu':
         return tinubu_positive_location()
+    elif candidate.lower() == 'gbadebo':
+        return gbadebo_positive_location()
+    elif candidate.lower() == 'jandor':
+        return jandor_positive_location()
+    elif candidate.lower() == 'sanwoolu':
+        return sanwoolu_positive_location()
+    elif candidate.lower() == 'tonye':
+        return tonye_positive_location()
+    elif candidate.lower() == 'itubo':
+        return itubo_positive_location()
+    elif candidate.lower() == 'fubara':
+        return fubara_positive_location()
+    elif candidate.lower() == 'folarin':
+        return folarin_positive_location()
+    elif candidate.lower() == 'seyi':
+        return seyi_positive_location()
+    elif candidate.lower() == 'sani':
+        return sani_positive_location()
+    elif candidate.lower() == 'asake':
+        return asake_positive_location()
+    elif candidate.lower() == 'ashiru':
+        return ashiru_positive_location()
+    elif candidate.lower() == 'nentawe':
+        return nentawe_positive_location()
+    elif candidate.lower() == 'dakum':
+        return dakum_positive_location()
+    elif candidate.lower() == 'caleb':
+        return caleb_positive_location()
+    elif candidate.lower() == 'nnaji':
+        return nnaji_positive_location()
+    elif candidate.lower() == 'peter':
+        return peter_positive_location()
 
 
 @app.route('/api/v1/negative-location/<candidate>')
