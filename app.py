@@ -1000,6 +1000,70 @@ def tinubu_negative_location():
     return negative_location(tinubu_df, tinubu_tweet_df, tinubu_model)
 
 
+def gbadebo_negative_location():
+    return negative_location(gbadebo_df, gbadebo_tweet_df, gbadebo_model)
+
+
+def jandor_negative_location():
+    return negative_location(jandor_df, jandor_tweet_df, jandor_model)
+
+
+def sanwoolu_negative_location():
+    return negative_location(sanwoolu_df, sanwoolu_tweet_df, sanwoolu_model)
+
+
+def tonye_negative_location():
+    return negative_location(tonye_df, tonye_tweet_df, tonye_model)
+
+
+def itubo_negative_location():
+    return negative_location(itubo_df, itubo_tweet_df, itubo_model)
+
+
+def fubara_negative_location():
+    return negative_location(fubara_df, fubara_tweet_df, fubara_model)
+
+
+def folarin_negative_location():
+    return negative_location(folarin_df, folarin_tweet_df, folarin_model)
+
+
+def seyi_negative_location():
+    return negative_location(seyi_df, seyi_tweet_df, seyi_model)
+
+
+def sani_negative_location():
+    return negative_location(sani_df, sani_tweet_df, sani_model)
+
+
+def asake_negative_location():
+    return negative_location(asake_df, asake_tweet_df, asake_model)
+
+
+def ashiru_negative_location():
+    return negative_location(ashiru_df, ashiru_tweet_df, ashiru_model)
+
+
+def nentawe_negative_location():
+    return negative_location(nentawe_df, nentawe_tweet_df, nentawe_model)
+
+
+def dakum_negative_location():
+    return negative_location(dakum_df, dakum_tweet_df, dakum_model)
+
+
+def caleb_negative_location():
+    return negative_location(caleb_df, caleb_tweet_df, caleb_model)
+
+
+def nnaji_negative_location():
+    return negative_location(nnaji_df, nnaji_tweet_df, nnaji_model)
+
+
+def peter_negative_location():
+    return negative_location(peter_df, peter_tweet_df, peter_model)
+
+
 @app.route('/api/v1/single-sentiment/<candidate>')
 def get_single_sentiment(candidate: str):
     if candidate.lower() == 'abubakar':
@@ -1260,6 +1324,38 @@ def get_negative_locations(candidate: str):
         return obi_negative_location()
     elif candidate.lower() == 'tinubu':
         return tinubu_negative_location()
+    elif candidate.lower() == 'gbadebo':
+        return gbadebo_negative_location()
+    elif candidate.lower() == 'jandor':
+        return jandor_negative_location()
+    elif candidate.lower() == 'sanwoolu':
+        return sanwoolu_negative_location()
+    elif candidate.lower() == 'tonye':
+        return tonye_negative_location()
+    elif candidate.lower() == 'itubo':
+        return itubo_negative_location()
+    elif candidate.lower() == 'fubara':
+        return fubara_negative_location()
+    elif candidate.lower() == 'folarin':
+        return folarin_negative_location()
+    elif candidate.lower() == 'seyi':
+        return seyi_negative_location()
+    elif candidate.lower() == 'sani':
+        return sani_negative_location()
+    elif candidate.lower() == 'asake':
+        return asake_negative_location()
+    elif candidate.lower() == 'ashiru':
+        return ashiru_negative_location()
+    elif candidate.lower() == 'nentawe':
+        return nentawe_negative_location()
+    elif candidate.lower() == 'dakum':
+        return dakum_negative_location()
+    elif candidate.lower() == 'caleb':
+        return caleb_negative_location()
+    elif candidate.lower() == 'nnaji':
+        return nnaji_negative_location()
+    elif candidate.lower() == 'peter':
+        return peter_negative_location()
 
 
 if __name__ == "__main__":
