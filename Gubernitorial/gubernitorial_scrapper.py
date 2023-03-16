@@ -18,8 +18,6 @@ dakum_model = pickle.load(open('model/gubernitorial_models/dakum_model.pkl', 'rb
 caleb_model = pickle.load(open('model/gubernitorial_models/caleb_model.pkl', 'rb'))
 nnaji_model = pickle.load(open('model/gubernitorial_models/nnaji_model.pkl', 'rb'))
 peter_model = pickle.load(open('model/gubernitorial_models/peter_model.pkl', 'rb'))
-joel_model = pickle.load(open('model/gubernitorial_models/joel_model.pkl', 'rb'))
-kefas_model = pickle.load(open('model/gubernitorial_models/kefas_model.pkl', 'rb'))
 
 
 # lists to capture extracted data from twitter
@@ -39,8 +37,6 @@ dakum_result = []
 caleb_result = []
 nnaji_result = []
 peter_result = []
-joel_result = []
-kefas_result = []
 
 
 
@@ -65,9 +61,6 @@ search_13 = f'(#DAKUMISCOMING OR #DakumPwajok2023 OR @PatrickDakum) until:{curre
 search_14 = f'(#MutfwangIsComing OR @CalebMutfwang) until:{current_date} since:{current_date - last_date}'
 search_15 = f'(#NWAKAIBIE4GOV OR @Nwakaibie4Gov) until:{current_date} since:{current_date - last_date}'
 search_16 = f'(#PeterGoWork OR #ThePeterMbahWeKnow OR #VotePeterMbah2023 OR @PNMbah) until:{current_date} since:{current_date - last_date}'
-search_17 = f'(@SenIkenya) until:{current_date} since:{current_date - last_date}'
-search_18 = f'(#TarabaIsPDP OR #AAKmedia OR @hon_kefas) until:{current_date} since:{current_date - last_date}'
-
 
 # function to extract twitter data
 def scrape_gbadebo():
@@ -260,27 +253,3 @@ def scrape_peter():
                 [tweet.date, tweet.user.username, tweet.sourceLabel, tweet.content, tweet.user.location,
                  tweet.likeCount, tweet.retweetCount])
     return peter_result
-
-
-def scrape_joel():
-    joel_result.clear()
-    for i, tweet in enumerate(sntwitter.TwitterSearchScraper(search_17).get_items()):
-        if i > 1000:
-            break
-        else:
-            joel_result.append(
-                [tweet.date, tweet.user.username, tweet.sourceLabel, tweet.content, tweet.user.location,
-                 tweet.likeCount, tweet.retweetCount])
-    return joel_result
-
-
-def scrape_kefas():
-    kefas_result.clear()
-    for i, tweet in enumerate(sntwitter.TwitterSearchScraper(search_18).get_items()):
-        if i > 1000:
-            break
-        else:
-            kefas_result.append(
-                [tweet.date, tweet.user.username, tweet.sourceLabel, tweet.content, tweet.user.location,
-                 tweet.likeCount, tweet.retweetCount])
-    return kefas_result
