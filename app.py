@@ -232,11 +232,10 @@ def hash_tag(candidate_hashtag_list):
     return sort
 
 
-def sentiment(candidate_tweet_df, candidate_model):
+def sentiment(candidate_tweet_df, candidate_model, candidate_vectorizer):
     cleaned_data = candidate_tweet_df.apply(cleanText)
     clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
-    vectorizer.fit(clean_df['tweet'].values)
-    vectorized = vectorizer.transform(clean_df['tweet'])
+    vectorized = candidate_vectorizer.transform(clean_df['tweet'])
     vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
     result = candidate_model.predict(vectorized_df.values)
     return result
