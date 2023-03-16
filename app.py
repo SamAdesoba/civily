@@ -97,7 +97,7 @@ def sensor():
                     result_tinubu.append(
                         [tweet.date, tweet.user.username, tweet.sourceLabel, tweet.content, tweet.user.location,
                          tweet.likeCount, tweet.retweetCount])
-                    
+
         # if (candidate == '')
 
         # print('scheduling')
@@ -193,6 +193,7 @@ joel_tweet_df = joel_df['tweet']
 
 kefas_df = pd.DataFrame(scrape_kefas(),
                            columns=['date', 'username', 'sourceLabel', 'tweet', 'location', 'likeCount', 'retweetCount'])
+
 kefas_tweet_df = kefas_df['tweet']
 
 atiku_sentiment_list = []
@@ -698,6 +699,81 @@ def sanwoolu_sentiment():
     return sentiment_json_format(result)
 
 
+def tonye_sentiment():
+    result = sentiment(tonye_tweet_df, tonye_model)
+    return sentiment_json_format(result)
+
+
+def itubo_sentiment():
+    result = sentiment(itubo_tweet_df, itubo_model)
+    return sentiment_json_format(result)
+
+
+def fubara_sentiment():
+    result = sentiment(fubara_tweet_df, fubara_model)
+    return sentiment_json_format(result)
+
+
+def folarin_sentiment():
+    result = sentiment(folarin_tweet_df, folarin_model)
+    return sentiment_json_format(result)
+
+
+def seyi_sentiment():
+    result = sentiment(seyi_tweet_df, seyi_model)
+    return sentiment_json_format(result)
+
+
+def sani_sentiment():
+    result = sentiment(sani_tweet_df, sani_model)
+    return sentiment_json_format(result)
+
+
+def asake_sentiment():
+    result = sentiment(asake_tweet_df, asake_model)
+    return sentiment_json_format(result)
+
+
+def ashiru_sentiment():
+    result = sentiment(ashiru_tweet_df, ashiru_model)
+    return sentiment_json_format(result)
+
+
+def nentawe_sentiment():
+    result = sentiment(nentawe_tweet_df, nentawe_model)
+    return sentiment_json_format(result)
+
+
+def dakum_sentiment():
+    result = sentiment(dakum_tweet_df, dakum_model)
+    return sentiment_json_format(result)
+
+
+def caleb_sentiment():
+    result = sentiment(caleb_tweet_df, caleb_model)
+    return sentiment_json_format(result)
+
+
+def nnaji_sentiment():
+    result = sentiment(nnaji_tweet_df, nnaji_model)
+    return sentiment_json_format(result)
+
+
+def peter_sentiment():
+    result = sentiment(peter_tweet_df, peter_model)
+    return sentiment_json_format(result)
+
+
+def joel_sentiment():
+    result = sentiment(joel_tweet_df, joel_model)
+    return sentiment_json_format(result)
+
+
+def kefas_sentiment():
+    result = sentiment(kefas_tweet_df, kefas_model)
+    return sentiment_json_format(result)
+
+
 # Single sentiment functions
 def atiku_single_tweet_sentiments():
     result = sentiment(atiku_tweet_df, atiku_model)
@@ -714,6 +790,114 @@ def obi_single_tweet_sentiments():
 def tinubu_single_tweet_sentiments():
     result = sentiment(tinubu_tweet_df, tinubu_model)
     filtered_result = get_random_sentiment(tinubu_df, result)
+    return filtered_result.to_dict(orient='records')
+
+
+def gbadebo_single_tweet_sentiments():
+    result = sentiment(gbadebo_tweet_df, gbadebo_model)
+    filtered_result = get_random_sentiment(gbadebo_df, result)
+    return filtered_result.to_dict(orient='records')
+
+
+def jandor_single_tweet_sentiments():
+    result = sentiment(jandor_tweet_df, jandor_model)
+    filtered_result = get_random_sentiment(jandor_df, result)
+    return filtered_result.to_dict(orient='records')
+
+
+def sanwoolu_single_tweet_sentiments():
+    result = sentiment(sanwoolu_tweet_df, sanwo_model)
+    filtered_result = get_random_sentiment(tinubu_df, result)
+    return filtered_result.to_dict(orient='records')
+
+
+def tonye_single_tweet_sentiments():
+    result = sentiment(tonye_tweet_df, tonye_model)
+    filtered_result = get_random_sentiment(tonye_df, result)
+    return filtered_result.to_dict(orient='records')
+
+
+def itubo_single_tweet_sentiments():
+    result = sentiment(itubo_tweet_df, itubo_model)
+    filtered_result = get_random_sentiment(itubo_df, result)
+    return filtered_result.to_dict(orient='records')
+
+
+def fubara_single_tweet_sentiments():
+    result = sentiment(fubara_tweet_df, fubara_model)
+    filtered_result = get_random_sentiment(fubara_df, result)
+    return filtered_result.to_dict(orient='records')
+
+
+def folarin_single_tweet_sentiments():
+    result = sentiment(folarin_tweet_df, folarin_model)
+    filtered_result = get_random_sentiment(folarin_df, result)
+    return filtered_result.to_dict(orient='records')
+
+
+def seyi_single_tweet_sentiments():
+    result = sentiment(seyi_tweet_df, seyi_model)
+    filtered_result = get_random_sentiment(seyi_df, result)
+    return filtered_result.to_dict(orient='records')
+
+
+def sani_single_tweet_sentiments():
+    result = sentiment(sani_tweet_df, sani_model)
+    filtered_result = get_random_sentiment(sani_df, result)
+    return filtered_result.to_dict(orient='records')
+
+
+def asake_single_tweet_sentiments():
+    result = sentiment(asake_tweet_df, asake_model)
+    filtered_result = get_random_sentiment(asake_df, result)
+    return filtered_result.to_dict(orient='records')
+
+
+def ashiru_single_tweet_sentiments():
+    result = sentiment(ashiru_tweet_df, ashiru_model)
+    filtered_result = get_random_sentiment(ashiru_df, result)
+    return filtered_result.to_dict(orient='records')
+
+
+def nentawe_single_tweet_sentiments():
+    result = sentiment(nentawe_tweet_df, nentawe_model)
+    filtered_result = get_random_sentiment(nentawe_df, result)
+    return filtered_result.to_dict(orient='records')
+
+
+def dakum_single_tweet_sentiments():
+    result = sentiment(dakum_tweet_df, dakum_model)
+    filtered_result = get_random_sentiment(dakum_df, result)
+    return filtered_result.to_dict(orient='records')
+
+
+def caleb_single_tweet_sentiments():
+    result = sentiment(caleb_tweet_df, caleb_model)
+    filtered_result = get_random_sentiment(caleb_df, result)
+    return filtered_result.to_dict(orient='records')
+
+
+def nnaji_single_tweet_sentiments():
+    result = sentiment(nnaji_tweet_df, nnaji_model)
+    filtered_result = get_random_sentiment(nnaji_df, result)
+    return filtered_result.to_dict(orient='records')
+
+
+def peter_single_tweet_sentiments():
+    result = sentiment(peter_tweet_df, peter_model)
+    filtered_result = get_random_sentiment(peter_df, result)
+    return filtered_result.to_dict(orient='records')
+
+
+def joel_single_tweet_sentiments():
+    result = sentiment(joel_tweet_df, joel_model)
+    filtered_result = get_random_sentiment(joel_df, result)
+    return filtered_result.to_dict(orient='records')
+
+
+def kefas_single_tweet_sentiments():
+    result = sentiment(kefas_tweet_df, kefas_model)
+    filtered_result = get_random_sentiment(kefas_df, result)
     return filtered_result.to_dict(orient='records')
 
 
@@ -834,6 +1018,42 @@ def get_single_sentiment(candidate: str):
         return obi_single_tweet_sentiments()
     elif candidate.lower() == 'tinubu':
         return tinubu_single_tweet_sentiments()
+    elif candidate.lower() == 'gbadebo':
+        return gbadebo_single_tweet_sentiments()
+    elif candidate.lower() == 'jandor':
+        return jandor_single_tweet_sentiments()
+    elif candidate.lower() == 'sanwoolu':
+        return sanwoolu_single_tweet_sentiments()
+    elif candidate.lower() == 'tonye':
+        return tonye_single_tweet_sentiments()
+    elif candidate.lower() == 'itubo':
+        return itubo_single_tweet_sentiments()
+    elif candidate.lower() == 'fubara':
+        return fubara_single_tweet_sentiments()
+    elif candidate.lower() == 'folarin':
+        return folarin_single_tweet_sentiments()
+    elif candidate.lower() == 'seyi':
+        return seyi_single_tweet_sentiments()
+    elif candidate.lower() == 'sani':
+        return sani_single_tweet_sentiments()
+    elif candidate.lower() == 'asake':
+        return asake_single_tweet_sentiments()
+    elif candidate.lower() == 'ashiru':
+        return ashiru_single_tweet_sentiments()
+    elif candidate.lower() == 'nentawe':
+        return nentawe_single_tweet_sentiments()
+    elif candidate.lower() == 'dakum':
+        return dakum_single_tweet_sentiments()
+    elif candidate.lower() == 'caleb':
+        return caleb_single_tweet_sentiments()
+    elif candidate.lower() == 'nnaji':
+        return nnaji_single_tweet_sentiments()
+    elif candidate.lower() == 'peter':
+        return peter_single_tweet_sentiments()
+    elif candidate.lower() == 'joel':
+        return joel_single_tweet_sentiments()
+    elif candidate.lower() == 'kefas':
+        return kefas_single_tweet_sentiments()
 
 
 @app.route('/api/v1/sentiments/<candidate>')
@@ -846,10 +1066,40 @@ def get_sentiments(candidate: str):
         return tinubu_sentiment()
     elif candidate.lower() == 'gbadebo':
         return gbadebo_sentiment()
-    elif candidate.lower() == 'sanwoolu':
-        return sanwoolu_sentiment()
     elif candidate.lower() == 'jandor':
         return jandor_sentiment()
+    elif candidate.lower() == 'sanwoolu':
+        return sanwoolu_sentiment()
+    elif candidate.lower() == 'tonye':
+        return tonye_sentiment()
+    elif candidate.lower() == 'itubo':
+        return itubo_sentiment()
+    elif candidate.lower() == 'fubara':
+        return fubara_sentiment()
+    elif candidate.lower() == 'folarin':
+        return folarin_sentiment()
+    elif candidate.lower() == 'seyi':
+        return seyi_sentiment()
+    elif candidate.lower() == 'sani':
+        return sani_sentiment()
+    elif candidate.lower() == 'asake':
+        return asake_sentiment()
+    elif candidate.lower() == 'ashiru':
+        return ashiru_sentiment()
+    elif candidate.lower() == 'nentawe':
+        return nentawe_sentiment()
+    elif candidate.lower() == 'dakum':
+        return dakum_sentiment()
+    elif candidate.lower() == 'caleb':
+        return caleb_sentiment()
+    elif candidate.lower() == 'nnaji':
+        return nnaji_sentiment()
+    elif candidate.lower() == 'peter':
+        return peter_sentiment()
+    elif candidate.lower() == 'joel':
+        return joel_sentiment()
+    elif candidate.lower() == 'kefas':
+        return kefas_sentiment()
 
 
 @app.route('/api/v1/hashtags/<candidate>')
