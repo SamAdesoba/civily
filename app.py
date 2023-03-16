@@ -1064,14 +1064,6 @@ def peter_negative_location():
     return negative_location(peter_df, peter_tweet_df, peter_model)
 
 
-def joel_negative_location():
-    return negative_location(joel_df, joel_tweet_df, joel_model)
-
-
-def kefas_negative_location():
-    return negative_location(kefas_df, kefas_tweet_df, kefas_model)
-
-
 @app.route('/api/v1/single-sentiment/<candidate>')
 def get_single_sentiment(candidate: str):
     if candidate.lower() == 'abubakar':
@@ -1364,10 +1356,6 @@ def get_negative_locations(candidate: str):
         return nnaji_negative_location()
     elif candidate.lower() == 'peter':
         return peter_negative_location()
-    elif candidate.lower() == 'joel':
-        return joel_negative_location()
-    elif candidate.lower() == 'kefas':
-        return kefas_negative_location()
 
 
 if __name__ == "__main__":
