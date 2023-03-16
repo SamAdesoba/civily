@@ -20,6 +20,24 @@ nnaji_model = pickle.load(open('model/gubernitorial_models/nnaji_model.pkl', 'rb
 peter_model = pickle.load(open('model/gubernitorial_models/peter_model.pkl', 'rb'))
 
 
+gbadebo_vectorizer = pickle.load(open('model/gubernitorial_vectorizers/gbadebo_vectorizer.pkl', 'rb'))
+jandor_vectorizer = pickle.load(open('model/gubernitorial_vectorizers/jandor_vectorizer.pkl', 'rb'))
+sanwoolu_vectorizer = pickle.load(open('model/gubernitorial_vectorizers/sanwoolu_vectorizer.pkl', 'rb'))
+tonye_vectorizer = pickle.load(open('model/gubernitorial_vectorizers/tonye_vectorizer.pkl', 'rb'))
+itubo_vectorizer = pickle.load(open('model/gubernitorial_vectorizers/itubo_vectorizer.pkl', 'rb'))
+fubara_vectorizer = pickle.load(open('model/gubernitorial_vectorizers/fubara_vectorizer.pkl', 'rb'))
+folarin_vectorizer = pickle.load(open('model/gubernitorial_vectorizers/folarin_vectorizer.pkl', 'rb'))
+seyi_vectorizer = pickle.load(open('model/gubernitorial_vectorizers/seyi_vectorizer.pkl', 'rb'))
+sani_vectorizer = pickle.load(open('model/gubernitorial_vectorizers/sani_vectorizer.pkl', 'rb'))
+asake_vectorizer = pickle.load(open('model/gubernitorial_vectorizers/asake_vectorizer.pkl', 'rb'))
+ashiru_vectorizer = pickle.load(open('model/gubernitorial_vectorizers/ashiru_vectorizer.pkl', 'rb'))
+nentawe_vectorizer = pickle.load(open('model/gubernitorial_vectorizers/nentawe_vectorizer.pkl', 'rb'))
+dakum_vectorizer = pickle.load(open('model/gubernitorial_vectorizers/dakum_vectorizer.pkl', 'rb'))
+caleb_vectorizer = pickle.load(open('model/gubernitorial_vectorizers/caleb_vectorizer.pkl', 'rb'))
+nnaji_vectorizer = pickle.load(open('model/gubernitorial_vectorizers/nnaji_vectorizer.pkl', 'rb'))
+peter_vectorizer = pickle.load(open('model/gubernitorial_vectorizers/peter_vectorizer.pkl', 'rb'))
+
+
 # lists to capture extracted data from twitter
 gbadebo_result = []
 jandor_result = []

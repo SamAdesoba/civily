@@ -12,10 +12,13 @@ CORS(app)
 # trained models for each candidate and vectorizer
 atiku_model = pickle.load(open('model/Presidential/atiku_model.pkl', 'rb'))
 obi_model = pickle.load(open('model/Presidential/obi_model_pickle.pkl', 'rb'))
-tinubu_model = pickle.load(open('model/Presidential/tinubu_model_pickle.pkl', 'rb'))
+tinubu_model = pickle.load(open('model/Presidential/tinubu_model.pkl', 'rb'))
 
-vectorizer = CountVectorizer(max_features=1000, ngram_range=(1, 2), max_df=500)
+# vectorizer = CountVectorizer(max_features=1000, ngram_range=(1, 2), max_df=500)
 atiku_vectorizer = pickle.load(open('model/Presidential/atiku_vectorizer.pkl', 'rb'))
+obi_vectorizer = pickle.load(open('model/Presidential/atiku_vectorizer.pkl', 'rb'))
+tinubu_vectorizer = pickle.load(open('model/Presidential/atiku_vectorizer.pkl', 'rb'))
+
 
 
 # function to clean extracted tweets
@@ -232,11 +235,10 @@ def hash_tag(candidate_hashtag_list):
     return sort
 
 
-def sentiment(candidate_tweet_df, candidate_model):
+def sentiment(candidate_tweet_df, candidate_model, candidate_vectorizer):
     cleaned_data = candidate_tweet_df.apply(cleanText)
     clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
-    vectorizer.fit(clean_df['tweet'].values)
-    vectorized = vectorizer.transform(clean_df['tweet'])
+    vectorized = candidate_vectorizer.transform(clean_df['tweet'])
     vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
     result = candidate_model.predict(vectorized_df.values)
     return result
@@ -622,101 +624,97 @@ def get_peter_hash_tag():
 
 # General value_count sentiment functions
 def atiku_sentiment():
-    cleaned_data = atiku_tweet_df.apply(cleanText)
-    clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
-    vectorized = atiku_vectorizer.transform(clean_df['tweet'])
-    vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
-    result = atiku_model.predict(vectorized_df.values)
+    result = sentiment(atiku_tweet_df, atiku_model, atiku_vectorizer)
     return sentiment_json_format(result)
 
 
 def obi_sentiment():
-    result = sentiment(obi_tweet_df, obi_model)
+    result = sentiment(obi_tweet_df, obi_model, obi_vectorizer)
     return sentiment_json_format(result)
 
 
 def tinubu_sentiment():
-    result = sentiment(tinubu_tweet_df, tinubu_model)
+    result = sentiment(tinubu_tweet_df, tinubu_model, tinubu_vectorizer)
     return sentiment_json_format(result)
 
 
 def gbadebo_sentiment():
-    result = sentiment(gbadebo_tweet_df, gbadebo_model)
+    result = sentiment(gbadebo_tweet_df, gbadebo_model, gbadebo_vectorizer)
     return sentiment_json_format(result)
 
 
 def jandor_sentiment():
-    result = sentiment(jandor_tweet_df, jandor_model)
+    result = sentiment(jandor_tweet_df, jandor_model, jandor_vectorizer)
     return sentiment_json_format(result)
 
 
 def sanwoolu_sentiment():
-    result = sentiment(sanwoolu_tweet_df, sanwoolu_model)
+    result = sentiment(sanwoolu_tweet_df, sanwoolu_model, sanwoolu_vectorizer)
     return sentiment_json_format(result)
 
 
 def tonye_sentiment():
-    result = sentiment(tonye_tweet_df, tonye_model)
+    result = sentiment(tonye_tweet_df, tonye_model, tonye_vectorizer)
     return sentiment_json_format(result)
 
 
 def itubo_sentiment():
-    result = sentiment(itubo_tweet_df, itubo_model)
+    result = sentiment(itubo_tweet_df, itubo_model, itubo_vectorizer)
     return sentiment_json_format(result)
 
 
 def fubara_sentiment():
-    result = sentiment(fubara_tweet_df, fubara_model)
+    result = sentiment(fubara_tweet_df, fubara_model, fubara_vectorizer)
     return sentiment_json_format(result)
 
 
 def folarin_sentiment():
-    result = sentiment(folarin_tweet_df, folarin_model)
+    result = sentiment(folarin_tweet_df, folarin_model, folarin_vectorizer)
     return sentiment_json_format(result)
 
 
 def seyi_sentiment():
-    result = sentiment(seyi_tweet_df, seyi_model)
+    result = sentiment(seyi_tweet_df, seyi_model, seyi_vectorizer)
     return sentiment_json_format(result)
 
 
 def sani_sentiment():
-    result = sentiment(sani_tweet_df, sani_model)
+    result = sentiment(sani_tweet_df, sani_model, sani_vectorizer)
     return sentiment_json_format(result)
 
 
 def asake_sentiment():
-    result = sentiment(asake_tweet_df, asake_model)
+    result = sentiment(asake_tweet_df, asake_model, asake_vectorizer)
     return sentiment_json_format(result)
 
 
 def ashiru_sentiment():
-    result = sentiment(ashiru_tweet_df, ashiru_model)
+    result = sentiment(ashiru_tweet_df, ashiru_model, ashiru_vectorizer)
     return sentiment_json_format(result)
 
 
 def nentawe_sentiment():
-    result = sentiment(nentawe_tweet_df, nentawe_model)
+    result = sentiment(nentawe_tweet_df, nentawe_model, nentawe_vectorizer)
     return sentiment_json_format(result)
 
 
 def dakum_sentiment():
-    result = sentiment(dakum_tweet_df, dakum_model)
+    result = sentiment(dakum_tweet_df, dakum_model, dakum_vectorizer)
     return sentiment_json_format(result)
 
 
 def caleb_sentiment():
-    result = sentiment(caleb_tweet_df, caleb_model)
+    result = sentiment(caleb_tweet_df, caleb_model, caleb_vectorizer)
     return sentiment_json_format(result)
 
 
 def nnaji_sentiment():
-    result = sentiment(nnaji_tweet_df, nnaji_model)
+    result = sentiment(nnaji_tweet_df, nnaji_model, nnaji_vectorizer)
     return sentiment_json_format(result)
 
 
 def peter_sentiment():
-    result = sentiment(peter_tweet_df, peter_model)
+    result = sentiment(peter_tweet_df, peter_model, peter_vectorizer)
     return sentiment_json_format(result)
 
 
