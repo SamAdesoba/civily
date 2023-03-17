@@ -239,8 +239,8 @@ def sentiment(candidate_tweet_df, candidate_model, candidate_vectorizer):
     cleaned_data = candidate_tweet_df.apply(cleanText)
     clean_df = pd.DataFrame(cleaned_data, columns=['tweet'])
     vectorized = candidate_vectorizer.transform(clean_df['tweet'])
-    vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
-    result = candidate_model.predict(vectorized_df.values)
+    # vectorized_df = pd.DataFrame(vectorized.toarray(), columns=vectorizer.get_feature_names_out())
+    result = candidate_model.predict(vectorized)
     return result
 
 
@@ -720,115 +720,115 @@ def peter_sentiment():
 
 # Single sentiment functions
 def atiku_single_tweet_sentiments():
-    result = sentiment(atiku_tweet_df, atiku_model)
+    result = sentiment(atiku_tweet_df, atiku_model, atiku_vectorizer)
     filtered_result = get_random_sentiment(atiku_df, result)
     return filtered_result.to_dict(orient='records')
 
 
 def obi_single_tweet_sentiments():
-    result = sentiment(obi_tweet_df, obi_model)
+    result = sentiment(obi_tweet_df, obi_model, obi_vectorizer)
     filtered_result = get_random_sentiment(obi_df, result)
     return filtered_result.to_dict(orient='records')
 
 
 def tinubu_single_tweet_sentiments():
-    result = sentiment(tinubu_tweet_df, tinubu_model)
+    result = sentiment(tinubu_tweet_df, tinubu_model, tinubu_vectorizer)
     filtered_result = get_random_sentiment(tinubu_df, result)
     return filtered_result.to_dict(orient='records')
 
 
 def gbadebo_single_tweet_sentiments():
-    result = sentiment(gbadebo_tweet_df, gbadebo_model)
+    result = sentiment(gbadebo_tweet_df, gbadebo_model, gbadebo_vectorizer)
     filtered_result = get_random_sentiment(gbadebo_df, result)
     return filtered_result.to_dict(orient='records')
 
 
 def jandor_single_tweet_sentiments():
-    result = sentiment(jandor_tweet_df, jandor_model)
+    result = sentiment(jandor_tweet_df, jandor_model, jandor_vectorizer)
     filtered_result = get_random_sentiment(jandor_df, result)
     return filtered_result.to_dict(orient='records')
 
 
 def sanwoolu_single_tweet_sentiments():
-    result = sentiment(sanwoolu_tweet_df, sanwoolu_model)
+    result = sentiment(sanwoolu_tweet_df, sanwoolu_model, sanwoolu_vectorizer)
     filtered_result = get_random_sentiment(tinubu_df, result)
     return filtered_result.to_dict(orient='records')
 
 
 def tonye_single_tweet_sentiments():
-    result = sentiment(tonye_tweet_df, tonye_model)
+    result = sentiment(tonye_tweet_df, tonye_model, tonye_vectorizer)
     filtered_result = get_random_sentiment(tonye_df, result)
     return filtered_result.to_dict(orient='records')
 
 
 def itubo_single_tweet_sentiments():
-    result = sentiment(itubo_tweet_df, itubo_model)
+    result = sentiment(itubo_tweet_df, itubo_model, itubo_vectorizer)
     filtered_result = get_random_sentiment(itubo_df, result)
     return filtered_result.to_dict(orient='records')
 
 
 def fubara_single_tweet_sentiments():
-    result = sentiment(fubara_tweet_df, fubara_model)
+    result = sentiment(fubara_tweet_df, fubara_model, fubara_vectorizer)
     filtered_result = get_random_sentiment(fubara_df, result)
     return filtered_result.to_dict(orient='records')
 
 
 def folarin_single_tweet_sentiments():
-    result = sentiment(folarin_tweet_df, folarin_model)
+    result = sentiment(folarin_tweet_df, folarin_model, folarin_vectorizer)
     filtered_result = get_random_sentiment(folarin_df, result)
     return filtered_result.to_dict(orient='records')
 
 
 def seyi_single_tweet_sentiments():
-    result = sentiment(seyi_tweet_df, seyi_model)
+    result = sentiment(seyi_tweet_df, seyi_model, seyi_vectorizer)
     filtered_result = get_random_sentiment(seyi_df, result)
     return filtered_result.to_dict(orient='records')
 
 
 def sani_single_tweet_sentiments():
-    result = sentiment(sani_tweet_df, sani_model)
+    result = sentiment(sani_tweet_df, sani_model, sani_vectorizer)
     filtered_result = get_random_sentiment(sani_df, result)
     return filtered_result.to_dict(orient='records')
 
 
 def asake_single_tweet_sentiments():
-    result = sentiment(asake_tweet_df, asake_model)
+    result = sentiment(asake_tweet_df, asake_model, asake_vectorizer)
     filtered_result = get_random_sentiment(asake_df, result)
     return filtered_result.to_dict(orient='records')
 
 
 def ashiru_single_tweet_sentiments():
-    result = sentiment(ashiru_tweet_df, ashiru_model)
+    result = sentiment(ashiru_tweet_df, ashiru_model, ashiru_vectorizer)
     filtered_result = get_random_sentiment(ashiru_df, result)
     return filtered_result.to_dict(orient='records')
 
 
 def nentawe_single_tweet_sentiments():
-    result = sentiment(nentawe_tweet_df, nentawe_model)
+    result = sentiment(nentawe_tweet_df, nentawe_model, nentawe_vectorizer)
     filtered_result = get_random_sentiment(nentawe_df, result)
     return filtered_result.to_dict(orient='records')
 
 
 def dakum_single_tweet_sentiments():
-    result = sentiment(dakum_tweet_df, dakum_model)
+    result = sentiment(dakum_tweet_df, dakum_model, dakum_vectorizer)
     filtered_result = get_random_sentiment(dakum_df, result)
     return filtered_result.to_dict(orient='records')
 
 
 def caleb_single_tweet_sentiments():
-    result = sentiment(caleb_tweet_df, caleb_model)
+    result = sentiment(caleb_tweet_df, caleb_model, caleb_vectorizer)
     filtered_result = get_random_sentiment(caleb_df, result)
     return filtered_result.to_dict(orient='records')
 
 
 def nnaji_single_tweet_sentiments():
-    result = sentiment(nnaji_tweet_df, nnaji_model)
+    result = sentiment(nnaji_tweet_df, nnaji_model, nnaji_vectorizer)
     filtered_result = get_random_sentiment(nnaji_df, result)
     return filtered_result.to_dict(orient='records')
 
 
 def peter_single_tweet_sentiments():
-    result = sentiment(peter_tweet_df, peter_model)
+    result = sentiment(peter_tweet_df, peter_model, peter_vectorizer)
     filtered_result = get_random_sentiment(peter_df, result)
     return filtered_result.to_dict(orient='records')
 
