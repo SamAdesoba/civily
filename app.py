@@ -1144,7 +1144,7 @@ def get_single_sentiment(candidate: str):
     elif candidate.lower() == 'seyi':
         return seyi_single_tweet_sentiments()
     elif candidate.lower() == 'sani':
-        return sani_single_tweet_sentiments()
+        return sani_single_tweet_seitubontiments()
     elif candidate.lower() == 'asake':
         return asake_single_tweet_sentiments()
     elif candidate.lower() == 'ashiru':
