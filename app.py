@@ -415,114 +415,133 @@ peter_hashtags_list = peter_df['hashtags'].tolist()
 def get_atiku_mention():
     atiku_mentions_df = mentions(atiku_mentions_list)
     atiku_mentions = atiku_mentions_df[atiku_mentions_df['Mentions'] == 'atiku']
+    atiku_mentions['Mentions'].mask(atiku_mentions['Mentions'] == 'atiku', 'result', inplace=True)
     return atiku_mentions.set_index(atiku_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
 
 
 def get_obi_mention():
     mentions_df = mentions(obi_mentions_list)
-    obi_mentions_df = mentions_df[mentions_df['Mentions'] == 'PeterObi']
-    return obi_mentions_df.set_index(obi_mentions_df['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
+    obi_mentions = mentions_df[mentions_df['Mentions'] == 'PeterObi']
+    obi_mentions['Mentions'].mask(obi_mentions['Mentions'] == 'PeterObi', 'result', inplace=True)
+    return obi_mentions.set_index(obi_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
 
 
 def get_tinubu_mention():
     mentions_df = mentions(tinubu_mentions_list)
     tinubu_mentions = mentions_df[mentions_df['Mentions'] == 'officialABAT']
+    tinubu_mentions['Mentions'].mask(tinubu_mentions['Mentions'] == 'officialABAT', 'result', inplace=True)
     return tinubu_mentions.set_index(tinubu_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
 
 
 def get_gbadebo_mention():
     mentions_df = mentions(gbadebo_mentions_list)
     gbadebo_mentions = mentions_df[mentions_df['Mentions'] == 'GRVlagos']
+    gbadebo_mentions['Mentions'].mask(gbadebo_mentions['Mentions'] == 'GRVlagos', 'result', inplace=True)
     return gbadebo_mentions.set_index(gbadebo_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
 
 
 def get_jandor_mention():
     mentions_df = mentions(jandor_mentions_list)
     jandor_mentions = mentions_df[mentions_df['Mentions'] == 'officialjandor']
+    jandor_mentions['Mentions'].mask(jandor_mentions['Mentions'] == 'officialjandor', 'result', inplace=True)
     return jandor_mentions.set_index(jandor_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
 
 
 def get_sanwoolu_mention():
     mentions_df = mentions(sanwoolu_mentions_list)
     sanwoolu_mentions = mentions_df[mentions_df['Mentions'] == 'jidesanwoolu']
+    sanwoolu_mentions['Mentions'].mask(sanwoolu_mentions['Mentions'] == 'jidesanwoolu', 'result', inplace=True)
     return sanwoolu_mentions.set_index(sanwoolu_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
 
 
 def get_tonye_mention():
     mentions_df = mentions(tonye_mentions_list)
     tonye_mentions = mentions_df[mentions_df['Mentions'] == 'TonyeCole1']
+    tonye_mentions['Mentions'].mask(tonye_mentions['Mentions'] == 'TonyeCole1', 'result', inplace=True)
     return tonye_mentions.set_index(tonye_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
 
 
 def get_itubo_mention():
     mentions_df = mentions(itubo_mentions_list)
     itubo_mentions = mentions_df[mentions_df['Mentions'] == 'GovCan_Beatrice']
+    itubo_mentions['Mentions'].mask(itubo_mentions['Mentions'] == 'GovCan_Beatrice', 'result', inplace=True)
     return itubo_mentions.set_index(itubo_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
 
 
 def get_fubara_mention():
     mentions_df = mentions(fubara_mentions_list)
     fubara_mentions = mentions_df[mentions_df['Mentions'] == 'SimFubaraKSC']
+    fubara_mentions['Mentions'].mask(fubara_mentions['Mentions'] == 'SimFubaraKSC', 'result', inplace=True)
     return fubara_mentions.set_index(fubara_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
 
 
 def get_folarin_mention():
     mentions_df = mentions(folarin_mentions_list)
     folarin_mentions = mentions_df[mentions_df['Mentions'] == 'teslimkfolarin']
+    folarin_mentions['Mentions'].mask(folarin_mentions['Mentions'] == 'teslimkfolarin', 'result', inplace=True)
     return folarin_mentions.set_index(folarin_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
 
 
 def get_seyi_mention():
     mentions_df = mentions(seyi_mentions_list)
     seyi_mentions = mentions_df[mentions_df['Mentions'] == 'seyiamakinde']
+    seyi_mentions['Mentions'].mask(seyi_mentions['Mentions'] == 'seyiamakinde', 'result', inplace=True)
     return seyi_mentions.set_index(seyi_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
 
 
 def get_sani_mention():
     mentions_df = mentions(sani_mentions_list)
     sani_mentions = mentions_df[mentions_df['Mentions'] == 'ubasanius']
+    sani_mentions['Mentions'].mask(sani_mentions['Mentions'] == 'ubasanius', 'result', inplace=True)
     return sani_mentions.set_index(sani_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
 
 
 def get_asake_mention():
     mentions_df = mentions(asake_mentions_list)
     asake_mentions = mentions_df[mentions_df['Mentions'] == 'joe_asake']
+    asake_mentions['Mentions'].mask(asake_mentions['Mentions'] == 'joe_asake', 'result', inplace=True)
     return asake_mentions.set_index(asake_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
 
 
 def get_ashiru_mention():
     mentions_df = mentions(ashiru_mentions_list)
     ashiru_mentions = mentions_df[mentions_df['Mentions'] == 'IsaAshiruKudan']
+    ashiru_mentions['Mentions'].mask(ashiru_mentions['Mentions'] == 'IsaAshiruKudan', 'result', inplace=True)
     return ashiru_mentions.set_index(ashiru_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
 
 
 def get_nentawe_mention():
     mentions_df = mentions(nentawe_mentions_list)
     nentawe_mentions = mentions_df[mentions_df['Mentions'] == 'nentawe1']
+    nentawe_mentions['Mentions'].mask(nentawe_mentions['Mentions'] == 'nentawe1', 'result', inplace=True)
     return nentawe_mentions.set_index(nentawe_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
 
 
 def get_dakum_mention():
     mentions_df = mentions(dakum_mentions_list)
     dakum_mentions = mentions_df[mentions_df['Mentions'] == 'PatrickDakum']
+    dakum_mentions['Mentions'].mask(dakum_mentions['Mentions'] == 'PatrickDakum', 'result', inplace=True)
     return dakum_mentions.set_index(dakum_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
 
 
 def get_caleb_mention():
     mentions_df = mentions(caleb_mentions_list)
     caleb_mentions = mentions_df[mentions_df['Mentions'] == 'CalebMutfwang']
+    caleb_mentions['Mentions'].mask(caleb_mentions['Mentions'] == 'CalebMutfwang', 'result', inplace=True)
     return caleb_mentions.set_index(caleb_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
 
 
 def get_nnaji_mention():
     mentions_df = mentions(nnaji_mentions_list)
     nnaji_mentions = mentions_df[mentions_df['Mentions'] == 'Nwakaibie4Gov']
+    nnaji_mentions['Mentions'].mask(nnaji_mentions['Mentions'] == 'Nwakaibie4Gov', 'result', inplace=True)
     return nnaji_mentions.set_index(nnaji_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
 
 
 def get_peter_mention():
     mentions_df = mentions(peter_mentions_list)
     peter_mentions = mentions_df[mentions_df['Mentions'] == 'PNMbah']
+    peter_mentions['Mentions'].mask(peter_mentions['Mentions'] == 'PNMbah', 'result', inplace=True)
     return peter_mentions.set_index(peter_mentions['Mentions']).drop('Mentions', axis=1).to_json(orient='columns')
 
 
